@@ -1,0 +1,161 @@
+package com.kristina.ecom.console;
+
+import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Scanner;
+
+import com.kristina.ecom.app.Order;
+import com.kristina.ecom.app.OrderService;
+import com.kristina.ecom.app.ProductService;
+import com.kristina.ecom.app.Product;
+
+public class Oms {
+  private static Oms instance = new Oms();
+  private Scanner sc;
+  private OrderService service;
+
+  private Oms() {
+    sc = new Scanner(System.in);
+    service = new OrderService();
+  }
+
+  public static Oms instance() {
+    return instance;
+  }
+
+  public void oms() {
+    while (true) {
+      menu();
+      int c = sc.nextInt();
+      switch (c) {
+        case 1:
+          all();
+          break;
+        case 2:
+          delete();
+          break;
+        case 4:
+          read();
+          break;
+        case 5:
+          update();
+          break;
+        case 6:
+          cancel();
+          break;
+        case 7:
+          return;
+        default:
+          System.out.println("Invalid choice. Please try again.");
+      }
+    }
+  }
+
+  private void menu() {
+    String[] omsMenu = {
+      "1: All orders",
+      "2: Delete",
+      "4: Read",
+      "5: Update",
+      "6: Cancel",
+      "7: Return to main menu"
+    };
+    
+    System.out.println("\n*** Order Management System ***");
+    Arrays.stream(omsMenu).forEach(System.out::println);
+  }
+
+  public void all() {
+    Arrays.stream(service.getAll().toArray()).forEach(
+      order -> System.out.println(((Order) order).getId() + ":" + order));
+  }
+
+  public void read() {
+    System.out.print("Which order would you like to read: ");
+    String id = sc.next();
+    System.out.println(service.get(id));
+  }
+
+  public void delete() {
+    all();
+    System.out.print("Which order would you like to delete: ");
+    String id = sc.next();
+
+    if (service.delete(id) > 0)
+      System.out.println("Order deleted");
+    else
+      System.out.println("Delete failed");
+  }
+
+  //  Cancel Order
+  public void cancel() {
+    System.out.println("*** Select an order to cancel ***");
+    all();
+    service.cancel(sc.next());
+    System.out.println("Order canceled");
+  }
+
+  public void update() {
+    System.out.println("*** Select an order to update ***");
+    all();
+    int OrderID = sc.nextInt();
+    Order order = service.get(String.valueOf(OrderID));
+    sc.nextLine();
+
+    System.out.print("All products in the order:\n");
+    int counter = 1;
+    for (Product product : order.getProducts()) {
+      System.out.println(counter++ + " : " + product);
+    }
+
+    String datetime = LocalDateTime.now().toString();
+    if (!datetime.isEmpty()) {
+      order.setDate(LocalDateTime.parse(datetime));
+    }
+
+    // Product in the stock
+    System.out.println("Select the product to be updated:");
+    int productIndex = sc.nextInt();
+    Product productFromOrder = order.getProducts().get(productIndex - 1);
+    ProductService productService = new ProductService();
+    Product productFromStock = productService.get(productFromOrder.getId());
+
+    // User input for quantity
+    System.out.println("What quantity do you want: ");
+    int quantityFromUser = sc.nextInt();
+
+    // System.out.println("################# check variables #########################");
+    // System.out.println(productFromOrder);
+    // System.out.println(productFromStock);
+    // System.out.println(quantityFromUser);
+
+
+    if (quantityFromUser == 0) { // only positive numbers
+      System.out.println("Delete the product from the order and return the product to the stock");
+    } else if (quantityFromUser > productFromOrder.getQuantity()) {
+        // when user increases the count of the product
+        int difference = quantityFromUser - productFromOrder.getQuantity();
+        if (productFromStock.getQuantity() >= difference) {
+          productFromOrder.setQuantity(quantityFromUser);
+          productFromStock.setQuantity(productFromStock.getQuantity() - difference);
+          System.out.println("The new quantity of the order is: " + productFromOrder.getQuantity());
+        } else {
+          System.out.println("Sorry! Not enough stock. The stock has only " + productFromStock.getQuantity() + " products");
+        }
+     // when user decreases the count of the product
+    } else {
+      int difference = productFromOrder.getQuantity() - quantityFromUser;
+      productFromOrder.setQuantity(quantityFromUser);
+      productFromStock.setQuantity(productFromStock.getQuantity() + difference);
+      System.out.println("The new quantity of the product in the order is: " + productFromOrder.getQuantity());
+    }
+
+    if (service.update(order) == 1) {
+      System.out.println("Order updated");
+    } else {
+      System.out.println("Update failed");
+    }
+  }
+}
