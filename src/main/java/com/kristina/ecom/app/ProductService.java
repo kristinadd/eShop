@@ -3,9 +3,7 @@ package com.kristina.ecom.app;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import com.kristina.ecom.res.DAO;
-
 import java.sql.SQLException;
 
 public class ProductService {

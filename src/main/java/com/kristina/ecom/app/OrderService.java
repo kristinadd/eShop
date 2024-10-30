@@ -8,24 +8,18 @@ import com.kristina.ecom.res.DAO;
 import java.sql.SQLException;
 
 public class OrderService {
-  // this can be a ProductDAQMySql
   private DAO<String, Order> dao;
   private DAO<Integer, Product> daoP;
 
   public OrderService() {
     dao = new OrderDAOMySql();
     daoP = new ProductDAOMySql();
-    // dao = new ProductDAOPostgress();
-    // I can just switch the dtabase in here and the 
-    // rest of the code will work due to the interface ProductDAO
   }
+
   public int create(Order order) {
     int rows  = 0;
     try {
-      // insert order
       rows = dao.create(order);
-
-      // update product stock
       Product stock;
       for (Product p : order.getProducts()) {
         stock = daoP.read(p.getId());

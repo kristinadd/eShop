@@ -1,9 +1,8 @@
 package com.kristina.ecom.app;
-import javax.sql.DataSource;
 
+import javax.sql.DataSource;
 import com.kristina.ecom.res.DAO;
 import com.kristina.ecom.res.DataSourceFactory;
-
 import java.util.List;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -11,7 +10,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.sql.PreparedStatement;
-
 
 public class ProductDAOMySql implements DAO<Integer, Product> {
 
@@ -35,7 +33,6 @@ public class ProductDAOMySql implements DAO<Integer, Product> {
     int rows =  stat.executeUpdate();
 
     conn.close();
-
     return rows;
   }
 
