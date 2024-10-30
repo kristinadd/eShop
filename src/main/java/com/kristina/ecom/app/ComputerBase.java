@@ -5,7 +5,6 @@ import java.util.stream.Collectors;
 import java.util.List;
 import java.util.Arrays;
 import java.util.ArrayList;
-// concrete java class
 
 public class ComputerBase implements Computer {
   // private static final String NAME = "Default Computer";
