@@ -100,7 +100,6 @@ public class Oms {
       System.out.println("Delete failed");
   }
 
-  //  Cancel Order
   public void cancel() {
     System.out.println("*** Select an order to cancel ***");
     all();
