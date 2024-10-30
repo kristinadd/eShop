@@ -165,6 +165,21 @@ public class OrderDAOMySql implements DAO<String, Order> {
       return rows;
     }
 
+    // this delete is for specific item in the orderDetails table
+    public int delete(String oid, int pid) throws SQLException {
+      int rows = 0;
+      Connection conn = datasource.getConnection();
+      String query = "DELETE FROM orderDetails WHERE oid=? AND pid=?";
+
+      PreparedStatement stat = conn.prepareStatement(query);
+      stat.setString(1, oid); 
+      stat.setInt(2, pid); 
+      rows = stat.executeUpdate();
+
+      conn.close();
+      return rows;
+    }
+
   public int update(Order order) throws SQLException {
     String orderDetailsQuery = "UPDATE orderDetails SET quantity=? WHERE oid=? AND pid=?";
     String orderQuery = "UPDATE porder SET description=?, total=?, date_time=? WHERE id=?";
@@ -175,11 +190,12 @@ public class OrderDAOMySql implements DAO<String, Order> {
     conn.setAutoCommit(false);
 
     // OrderDetails table
+    // the order of the parameters need to match the order in the query
     PreparedStatement stat = conn.prepareStatement(orderDetailsQuery);
     for (Product product : order.getProducts()) {
-      stat.setInt(1, product.getId());
-      stat.setString(2, order.getId());
-      stat.setInt(3, product.getQuantity());
+      stat.setInt(3, product.getId()); // goes third
+      stat.setString(2, order.getId()); // goes second
+      stat.setInt(1, product.getQuantity()); // goes first
       stat.executeUpdate();
     }
 
@@ -193,6 +209,8 @@ public class OrderDAOMySql implements DAO<String, Order> {
     rows = stat.executeUpdate();
 
     // Product table
+    // Can't update the product table from here because I don't have the data for the product in the stock.
+    // The data for the quantity in the stocl is in the Oms, productFromStock variable holds the data
     // stat = conn.prepareStatement(productQuantityQuery);
     // for (Product product : order.getProducts()) {
     //   stat.setInt(1, product.getQuantity());

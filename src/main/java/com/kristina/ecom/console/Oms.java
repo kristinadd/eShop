@@ -40,7 +40,7 @@ public class Oms {
           read();
           break;
         case 5:
-          update();
+          orderUpdateMenu();
           break;
         case 6:
           cancel();
@@ -65,6 +65,17 @@ public class Oms {
     
     System.out.println("\n*** Order Management System ***");
     Arrays.stream(omsMenu).forEach(System.out::println);
+  }
+
+  private void orderUpdateMenu() {
+    String[] orderUpdateMenu = {
+      "1: Delete a product from the order",
+      "2: Add a product to the order",
+      "3: Update existing product in the order",
+    };
+    
+    System.out.println("\n*** Order Update Menu ***");
+    Arrays.stream(orderUpdateMenu).forEach(System.out::println);
   }
 
   public void all() {
@@ -93,8 +104,10 @@ public class Oms {
   public void cancel() {
     System.out.println("*** Select an order to cancel ***");
     all();
-    service.cancel(sc.next());
-    System.out.println("Order canceled");
+    if (service.cancel(sc.next()) == 0)
+      System.out.println("Order canceled");
+    else
+      System.out.println("Order failed");
   }
 
   public void update() {
@@ -131,15 +144,27 @@ public class Oms {
     // System.out.println(productFromStock);
     // System.out.println(quantityFromUser);
 
+    // when a user want to update the order and add new products to the order
+    // select update (submenue)
+      // delete a product from the order
+      // add a product to the order
+      // update existing product in the order
 
     if (quantityFromUser == 0) { // only positive numbers
       System.out.println("Delete the product from the order and return the product to the stock");
+      productFromStock.setQuantity(productFromStock.getQuantity() + productFromOrder.getQuantity());
+      productFromOrder.setQuantity(0);
+      productService.update(productFromStock);
+      order.getProducts().remove(productIndex - 1);
+      service.delete(order.getId(), productFromOrder.getId());
+      // delete the product from the order
     } else if (quantityFromUser > productFromOrder.getQuantity()) {
         // when user increases the count of the product
         int difference = quantityFromUser - productFromOrder.getQuantity();
         if (productFromStock.getQuantity() >= difference) {
           productFromOrder.setQuantity(quantityFromUser);
           productFromStock.setQuantity(productFromStock.getQuantity() - difference);
+          productService.update(productFromStock);
           System.out.println("The new quantity of the order is: " + productFromOrder.getQuantity());
         } else {
           System.out.println("Sorry! Not enough stock. The stock has only " + productFromStock.getQuantity() + " products");
@@ -149,6 +174,7 @@ public class Oms {
       int difference = productFromOrder.getQuantity() - quantityFromUser;
       productFromOrder.setQuantity(quantityFromUser);
       productFromStock.setQuantity(productFromStock.getQuantity() + difference);
+      productService.update(productFromStock);
       System.out.println("The new quantity of the product in the order is: " + productFromOrder.getQuantity());
     }
 

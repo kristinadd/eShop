@@ -71,18 +71,30 @@ public class OrderService {
     return rows;
   }
 
+  public int delete(String oid, int pid) {
+    int rows = 0;
+    try {
+      // downcast to OrderDAOMySql to access the delete method
+      rows = ((OrderDAOMySql)dao).delete(oid, pid);
+    } catch (SQLException ex) {
+      ex.printStackTrace();
+    }
+    return rows;
+  }
+
   public int cancel(String id) {
     int rows = 0;
     try {
-    // use the product service to have only one 
-      Order order = dao.read(id);
-      order.getProducts().forEach(p -> {
-        ProductService stock = new ProductService();
-        Product product = stock.get(p.getId());
+      ProductService pService  = new ProductService();
+      dao.read(id).getProducts().forEach(p -> {
+        Product product = pService.get(p.getId());
         product.setQuantity(product.getQuantity() + p.getQuantity());
+        pService.update(product);
       });
+
+      rows = dao.delete(id);
     } catch ( SQLException ex) {
-      ex.printStackTrace();
+      System.out.println("Error cancelling the order");
     }
     return rows;
   }
