@@ -9,7 +9,7 @@ public class Product implements Cloneable {
   private int quantity;
 
   public Product() {
-    // default constructor, just empty
+    // default constructor
   }
 
   public Product(String type, String name, double price, String img) {
@@ -17,14 +17,13 @@ public class Product implements Cloneable {
   }
 
   public Product(String type, String name, double price, int quantity) {
-    this(0,  type, name, price, quantity, " "); // default image of nothing 
+    this(0,  type, name, price, quantity, " "); 
   }
 
   public Product(String type, String name, double price, int quantity, String img) {
     this(0, type, name, price, quantity, img);
   }
 
-  // constructor for the read method
   public Product( int id, String name, double price, int quantity) {
     this(id,  " ", name, price, quantity, " ");
   }

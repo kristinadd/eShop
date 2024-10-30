@@ -5,7 +5,6 @@ import java.util.List;
 public class ComputerDecorator implements Computer{
   private Computer computer;
 
-  // constructor
   public ComputerDecorator(Computer computer) {
     this.computer = computer;
   }

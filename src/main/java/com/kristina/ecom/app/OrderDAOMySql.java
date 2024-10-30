@@ -1,10 +1,8 @@
 package com.kristina.ecom.app;
 
 import javax.sql.DataSource;
-
 import com.kristina.ecom.res.DAO;
 import com.kristina.ecom.res.DataSourceFactory;
-
 import java.util.List;
 import java.util.stream.Collectors;
 import java.sql.Connection;
@@ -17,7 +15,6 @@ import java.sql.Timestamp;
 
 
 public class OrderDAOMySql implements DAO<String, Order> {
-  // get data from database
 
   private DataSource datasource;
 
@@ -30,10 +27,8 @@ public class OrderDAOMySql implements DAO<String, Order> {
       String query = "INSERT INTO porder VALUES(? ,?, ?, ?)";
       String query2 = "INSERT INTO orderDetails VALUES(?, ?, ?)";
   
-      // manage the transaction
       conn.setAutoCommit(false);
 
-      // insert into porder table 
       PreparedStatement stat = conn.prepareStatement(query);
       stat.setString(1, order.getId());
       stat.setString(2, order.getDescription());
@@ -41,9 +36,7 @@ public class OrderDAOMySql implements DAO<String, Order> {
       stat.setTimestamp(4,  Timestamp.valueOf(order.getDate()));
       int rows =  stat.executeUpdate();
 
-      // insert into orderDetails table
       stat = conn.prepareStatement(query2);
-      // products var contains a list products, so I need to iterate over it to insert each product
       for (Product product : order.getProducts()) {
         stat.setString(1, order.getId());
         stat.setInt(2, product.getId());
@@ -60,11 +53,7 @@ public class OrderDAOMySql implements DAO<String, Order> {
     @Override public List<Order> readAll() throws SQLException {
       List<Order> orders = new ArrayList<>();
       Connection connection = datasource.getConnection();
-
       String query = "SELECT * FROM porder";
-      // String query2 = "SELECT * FROM orderDetails";
-    
-
       Statement stat = connection.createStatement();
       ResultSet rs = stat.executeQuery(query);
       while (rs.next()) {
@@ -84,11 +73,7 @@ public class OrderDAOMySql implements DAO<String, Order> {
     @Override
     public Order read(String id) throws SQLException {
         Order order = null;
-    
-        // Step 1: Retrieve the order from the `porder` table
         String orderQuery = "SELECT * FROM porder WHERE id = ?";
-        
-        // Step 2: Retrieve the products associated with the order from the `orderDetails` and `product` tables
         String productsQuery = "SELECT product.id, product.name, product.price, orderDetails.quantity " +
                                "FROM orderDetails " +
                                "JOIN product ON orderDetails.pid = product.id " +
@@ -97,55 +82,49 @@ public class OrderDAOMySql implements DAO<String, Order> {
         Connection conn = datasource.getConnection();
         try {
             conn.setAutoCommit(false);
-            
-            // Step 3: Fetch the order details
             PreparedStatement orderStmt = conn.prepareStatement(orderQuery);
-            orderStmt.setString(1, id);  // Set the order ID in the query
+            orderStmt.setString(1, id);
             ResultSet orderRs = orderStmt.executeQuery();
             
             if (orderRs.next()) {
-                // Step 4: Create the order object (initially with an empty product list)
                 order = new Order(
                     orderRs.getString("id"), 
                     orderRs.getString("description"), 
                     orderRs.getFloat("total"), 
                     orderRs.getTimestamp("date_time").toLocalDateTime(), 
-                    new ArrayList<>() // Product list will be populated later
+                    new ArrayList<>()
                 );
             }
             
-            // Step 5: Fetch the associated products
             if (order != null) {
                 PreparedStatement productsStmt = conn.prepareStatement(productsQuery);
-                productsStmt.setString(1, id);  // Set the order ID in the query
+                productsStmt.setString(1, id);
                 ResultSet productsRs = productsStmt.executeQuery();
                 
                 List<Product> products = new ArrayList<>();
                 while (productsRs.next()) {
-                    // Create each product and add it to the products list
                     Product product = new Product(
                         productsRs.getInt("id"), 
                         productsRs.getString("name"), 
                         productsRs.getFloat("price"), 
-                        productsRs.getInt("quantity")  // Quantity in orderDetails
+                        productsRs.getInt("quantity")
                     );
                     products.add(product);
                 }
-                order.setProducts(products);  // Set the populated product list in the order
+                order.setProducts(products);
             }
     
             conn.commit();
         } catch (SQLException e) {
-            conn.rollback();  // Rollback if something goes wrong
+            conn.rollback();
             throw e;
         } finally {
-            conn.close();  // Close the connection
+            conn.close();
         }
         
-        return order;  // Return the order with its associated products
+        return order;
     }
     
-
     @Override public int delete(String id) throws SQLException{
       int rows = 0;
       Connection conn = datasource.getConnection();
@@ -183,19 +162,17 @@ public class OrderDAOMySql implements DAO<String, Order> {
   public int update(Order order) throws SQLException {
     String orderDetailsQuery = "UPDATE orderDetails SET quantity=? WHERE oid=? AND pid=?";
     String orderQuery = "UPDATE porder SET description=?, total=?, date_time=? WHERE id=?";
-    // String productQuantityQuery = "UPDATE product SET quantity=? WHERE id=?";
     int rows = 0;
 
     Connection conn = datasource.getConnection();
     conn.setAutoCommit(false);
 
     // OrderDetails table
-    // the order of the parameters need to match the order in the query
     PreparedStatement stat = conn.prepareStatement(orderDetailsQuery);
     for (Product product : order.getProducts()) {
-      stat.setInt(3, product.getId()); // goes third
-      stat.setString(2, order.getId()); // goes second
-      stat.setInt(1, product.getQuantity()); // goes first
+      stat.setInt(3, product.getId());
+      stat.setString(2, order.getId());
+      stat.setInt(1, product.getQuantity());
       stat.executeUpdate();
     }
 
@@ -207,16 +184,6 @@ public class OrderDAOMySql implements DAO<String, Order> {
     stat.setString(4, order.getId());
     stat.executeUpdate();
     rows = stat.executeUpdate();
-
-    // Product table
-    // Can't update the product table from here because I don't have the data for the product in the stock.
-    // The data for the quantity in the stocl is in the Oms, productFromStock variable holds the data
-    // stat = conn.prepareStatement(productQuantityQuery);
-    // for (Product product : order.getProducts()) {
-    //   stat.setInt(1, product.getQuantity());
-    //   stat.setInt(2, product.getId());
-    //   stat.executeUpdate();
-    // }
 
     conn.commit();
     conn.close();

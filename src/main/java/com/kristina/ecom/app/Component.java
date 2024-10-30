@@ -1,5 +1,4 @@
 package com.kristina.ecom.app;
-
 public class Component extends ComputerDecorator {
   private String description;
   private double price;
@@ -13,7 +12,6 @@ public class Component extends ComputerDecorator {
     this.description = product.getName();
     this.price = product.getPrice();
     if (super.getComponents().contains(product)) {
-      // indexOf --> get the index in the array
       Product p = super.getComponents().get(super.getComponents().indexOf(product));
        p.setQuantity(p.getQuantity() + product.getQuantity());
     } else
@@ -32,7 +30,6 @@ public class Component extends ComputerDecorator {
 
   @Override
   public String toString() {
-    // return "OrderID@" + this.getOrderID() + ": " + this.getDescription() + " $" + this.getPrice();
     return String.format("OrderID@%s: %s s%.2f", this.getOrderID(), this.getDescription(), this.getPrice());
   }
 }
