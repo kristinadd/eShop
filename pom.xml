@@ -54,6 +54,7 @@
 			<artifactId>mysql-connector-j</artifactId>
 			<scope>9.0.0</scope>
 		</dependency>
+		<!-- The starter-test dependency includes JUnit -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
