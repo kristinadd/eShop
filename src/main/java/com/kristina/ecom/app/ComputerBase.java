@@ -15,6 +15,7 @@ public class ComputerBase implements Computer {
   private double price;
   private List<Product> components;
 
+  // check
   public ComputerBase() {
       this(getID(), new ArrayList<Product>());
   }
