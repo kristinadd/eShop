@@ -2,9 +2,7 @@ package com.kristina.ecom.app;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import com.kristina.ecom.res.DAO;
-
 import java.sql.SQLException;
 
 public class OrderService {
