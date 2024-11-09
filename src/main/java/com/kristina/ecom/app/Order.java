@@ -70,7 +70,6 @@ public class Order {
 
   @Override
   public String toString() {
-    return "Order [id=" + id + ", description=" + description + ", total=" + total + ", date=" + date + ", products="
-        + products + "]";
+    return String.format("Order %s@%s: %s $%.2f", this.id, this.date, this.description, this.total);
   }
 }

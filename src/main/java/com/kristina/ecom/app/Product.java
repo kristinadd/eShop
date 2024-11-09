@@ -25,7 +25,7 @@ public class Product implements Cloneable {
   }
 
   public Product( int id, String name, double price, int quantity) {
-    this(id,  " ", name, price, quantity, " ");
+    this(id,  "Component", name, price, quantity, " ");
   }
 
   public Product(int id, String type, String name, double price, int quantity, String img) {
