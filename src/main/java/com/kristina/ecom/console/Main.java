@@ -37,7 +37,7 @@ public class Main {
               admin.admin();
               break;
             case 6:
-              oms.oms();
+              oms.admin();
               break;
             case 7:
               System.exit(0);
