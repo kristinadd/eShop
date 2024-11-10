@@ -127,29 +127,15 @@ public class Oms {
       order.setDate(LocalDateTime.parse(datetime));
     }
 
-    // Product in the stock
     System.out.println("Select the product to be updated:");
     int productIndex = sc.nextInt();
     Product productFromOrder = order.getProducts().get(productIndex - 1);
     ProductService productService = new ProductService();
     Product productFromStock = productService.get(productFromOrder.getId());
-
-    // User input for quantity
     System.out.println("What quantity do you want: ");
     int quantityFromUser = sc.nextInt();
 
-    // System.out.println("################# check variables #########################");
-    // System.out.println(productFromOrder);
-    // System.out.println(productFromStock);
-    // System.out.println(quantityFromUser);
-
-    // when a user want to update the order and add new products to the order
-    // select update (submenue)
-      // delete a product from the order
-      // add a product to the order
-      // update existing product in the order
-
-    if (quantityFromUser == 0) { // only positive numbers
+    if (quantityFromUser == 0) {
       System.out.println("Delete the product from the order and return the product to the stock");
       productFromStock.setQuantity(productFromStock.getQuantity() + productFromOrder.getQuantity());
       productFromOrder.setQuantity(0);
