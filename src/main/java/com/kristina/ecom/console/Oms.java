@@ -172,17 +172,14 @@ public class Oms {
 
       switch (c) {
         case 1:
-        // delete a product from the order
           deleteProductFromOrder(order);
           break;
         case 2:
         // add a product to the order
-          delete();
           break;
         case 3:
           updateProducts(order);
           break;
-        // return to main menu
         case 4:
           return;
         default:
@@ -195,7 +192,6 @@ public class Oms {
     System.out.println("Select the product to be updated:");
     int i = 1; 
     for (Product p : order.getProducts()) {
-      // increase i
       System.out.println(i++ + ": " + p);
     }
 
