@@ -120,6 +120,28 @@ public class Oms {
       System.out.println("Delete failed");
     }
   }
+
+// draft
+  public void addProductToOrder(Order order) {
+    ProductService productService = new ProductService();
+    productService.getAll();
+    System.out.println("Select the product to add to the order:");
+    String productId = sc.next();
+    Product product = productService.get(productId);
+    System.out.println("What quantity do you want: ");
+    int quantity = sc.nextInt();
+    if (quantity > product.getQuantity()) {
+      System.out.println("Sorry! Not enough stock. The stock has only " + product.getQuantity() + " products");
+    } else {
+      product.setQuantity(quantity);
+      order.getProducts().add(product);
+      if (service.add(order, product) > 0) {
+        System.out.println("Product added to the order");
+      } else {
+        System.out.println("Add failed");
+      }
+    }
+  }
   
 
   public void cancel() {
@@ -175,7 +197,7 @@ public class Oms {
           deleteProductFromOrder(order);
           break;
         case 2:
-        // add a product to the order
+        addProductToOrder(order);
           break;
         case 3:
           updateProducts(order);
