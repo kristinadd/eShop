@@ -121,12 +121,13 @@ public class Oms {
     }
   }
 
-// draft
   public void addProductToOrder(Order order) {
     ProductService productService = new ProductService();
     productService.getAll();
     System.out.println("Select the product to add to the order:");
-    String productId = sc.next();
+    // int productId = sc.next(); // sc.next() returns a String and it requires an int conversion
+    // int productId = Integer.parseInt(sc.next()); // Convert the String to an int
+    int productId = sc.nextInt(); // Use sc.nextInt() to directly get an int
     Product product = productService.get(productId);
     System.out.println("What quantity do you want: ");
     int quantity = sc.nextInt();
@@ -135,6 +136,7 @@ public class Oms {
     } else {
       product.setQuantity(quantity);
       order.getProducts().add(product);
+      // Attempt to add the product to the order
       if (service.add(order, product) > 0) {
         System.out.println("Product added to the order");
       } else {
