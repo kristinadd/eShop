@@ -6,6 +6,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
+import javax.swing.plaf.basic.BasicSplitPaneUI.KeyboardDownRightHandler;
+
 import com.kristina.ecom.app.Order;
 import com.kristina.ecom.app.OrderService;
 import com.kristina.ecom.app.ProductService;
@@ -123,26 +125,51 @@ public class Oms {
 
   public void addProductToOrder(Order order) {
     ProductService productService = new ProductService();
-    productService.getAll();
+    List<Product> products =  productService.getAll();
+    for (int i =0; i < products.size(); i++) {
+      System.out.println((i+1) + " " + products.get(i));
+    }
     System.out.println("Select the product to add to the order:");
-    // int productId = sc.next(); // sc.next() returns a String and it requires an int conversion
-    // int productId = Integer.parseInt(sc.next()); // Convert the String to an int
-    int productId = sc.nextInt(); // Use sc.nextInt() to directly get an int
-    Product product = productService.get(productId);
+    int productIndex = sc.nextInt(); // index of the product in the list
     System.out.println("What quantity do you want: ");
     int quantity = sc.nextInt();
+    Product product = products.get(productIndex -1);
     if (quantity > product.getQuantity()) {
-      System.out.println("Sorry! Not enough stock. The stock has only " + product.getQuantity() + " products");
+        System.out.println("Sorry! Not enough stock. The stock has only " + product.getQuantity() + " products");
     } else {
-      product.setQuantity(quantity);
-      order.getProducts().add(product);
-      // Attempt to add the product to the order
-      if (service.add(order, product) > 0) {
-        System.out.println("Product added to the order");
-      } else {
-        System.out.println("Add failed");
+      System.out.println("Product added to the order");
+      try {
+          Product productInOrder = (Product) product.clone();
+          productInOrder.setQuantity(quantity);
+      } catch (CloneNotSupportedException e) {
+          e.printStackTrace();
       }
+      order.getProducts().add(product); // passed by reference
+      order.setDescription(order.getDescription() + product.getName() + " ");
+      order.setTotal(order.getTotal() + (float) product.getPrice() * quantity);
+      order.setDate(LocalDateTime.now());
+      service.updateProductsInOrder(order, product);
+      service.update(order); // update the description ...
+      // Fix the description 
     }
+
+  //   // int productId = sc.next(); // sc.next() returns a String and it requires an int conversion
+  //   // int productId = Integer.parseInt(sc.next()); // Convert the String to an int
+  //   int productId = sc.nextInt(); // Use sc.nextInt() to directly get an int
+  //   Product product = productService.get(productId);
+  //   System.out.println("What quantity do you want: ");
+  //   int quantity = sc.nextInt();
+
+  //   c
+  //     product.setQuantity(quantity);
+  //     order.getProducts().add(product);
+  //     // Attempt to add the product to the order
+  //     if (service.add(order, product) > 0) {
+  //       System.out.println("Product added to the order");
+  //     } else {
+  //       System.out.println("Add failed");
+  //     }
+  //   }
   }
   
 

@@ -14,6 +14,16 @@ public class OrderService {
     daoP = new ProductDAOMySql();
   }
 
+  public int updateProductsInOrder(Order order, Product product) {
+    int rows = 0;
+    try {
+      rows = ((OrderDAOMySql)dao).updateProductsInOrder(order, product);
+    } catch (SQLException ex) {
+      ex.printStackTrace();
+    }
+    return rows;
+  }
+
   public int create(Order order) {
     int rows  = 0;
     try {

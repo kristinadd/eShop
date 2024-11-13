@@ -22,6 +22,23 @@ public class OrderDAOMySql implements DAO<String, Order> {
     this.datasource = DataSourceFactory.instance().getDataSource();
   }
 
+  // add a new product to exising order
+  public int updateProductsInOrder(Order order, Product product) throws SQLException {
+    int rows =0;
+    Connection conn = datasource.getConnection();
+    String query = "INSERT INTO orderDetails VALUES(?, ?, ?)";
+    
+    
+    PreparedStatement stat = conn.prepareStatement(query);
+    stat = conn.prepareStatement(query);
+      stat.setString(1, order.getId());
+      stat.setInt(2, product.getId());
+      stat.setInt(3, product.getQuantity());
+      rows = stat.executeUpdate();
+
+    return rows;
+  }
+
   @Override public int create(Order order) throws SQLException {
       Connection conn = datasource.getConnection();
       String query = "INSERT INTO porder VALUES(? ,?, ?, ?)";
@@ -32,7 +49,7 @@ public class OrderDAOMySql implements DAO<String, Order> {
       PreparedStatement stat = conn.prepareStatement(query);
       stat.setString(1, order.getId());
       stat.setString(2, order.getDescription());
-      stat.setFloat(3, order.getPrice());
+      stat.setFloat(3, order.getTotal());
       stat.setTimestamp(4,  Timestamp.valueOf(order.getDate()));
       int rows =  stat.executeUpdate();
 
@@ -179,7 +196,7 @@ public class OrderDAOMySql implements DAO<String, Order> {
     // Order table
     stat = conn.prepareStatement(orderQuery);
     stat.setString(1,order.getDescription());
-    stat.setFloat(2, order.getPrice());
+    stat.setFloat(2, order.getTotal());
     stat.setTimestamp(3, Timestamp.valueOf(order.getDate()));
     stat.setString(4, order.getId());
     stat.executeUpdate();

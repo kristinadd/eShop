@@ -79,7 +79,6 @@ public class MarketSpace {
       System.out.println("What component would you like to add?");
       menu();
 
-
       c = sc.nextInt();
       if (c == -1) {
         cancel = true;

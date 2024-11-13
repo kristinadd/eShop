@@ -44,7 +44,7 @@ public class Order {
     this.description = description;
   }
 
-  public float getPrice() {
+  public float getTotal() {
     return total;
   }
 
