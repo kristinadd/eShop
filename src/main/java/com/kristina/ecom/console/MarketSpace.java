@@ -39,23 +39,23 @@ public class MarketSpace {
     return instance;
   }
 
-  public void loadProducts() {
-    try {
-      Scanner sc = new Scanner(new File("resources/products.csv"));
-      // needed to change it to the full path
+  // public void loadProducts() {
+  //   try {
+  //     Scanner sc = new Scanner(new File("resources/products.csv"));
+  //     // needed to change it to the full path
 
-      String[] tokens = null;
-      int i = 1;
-      while (sc.hasNextLine()) {
-        tokens = sc.nextLine().split(",");
-        Product product = new Product("Component", tokens[0], Double.parseDouble(tokens[1]), tokens[2]);
-        products.put(i++, product);
-      }
-      } catch (FileNotFoundException ex){
-        System.out.println("File not found");
-      }
-      System.out.println(products.size());
-  }
+  //     String[] tokens = null;
+  //     int i = 1;
+  //     while (sc.hasNextLine()) {
+  //       tokens = sc.nextLine().split(",");
+  //       Product product = new Product("Component", tokens[0], Double.parseDouble(tokens[1]), tokens[2]);
+  //       products.put(i++, product);
+  //     }
+  //     } catch (FileNotFoundException ex){
+  //       System.out.println("File not found");
+  //     }
+  //     System.out.println(products.size());
+  // }
 
   // public void loadDB() {
   //     // for (Product product : new ProductService().getAll())
@@ -65,12 +65,9 @@ public class MarketSpace {
   // }
 
   public void buy() {
-    // load products
-    new ProductService().getAll().forEach((product) -> this.products.put(product.getId(), product));
-
+    new ProductService().getAll().forEach((product) -> this.products.put(product.getId(), product)); // load products from db
     Computer computer = new ComputerBase();
     Boolean cancel = false;
-
     Scanner sc = new Scanner(System.in);
     int c = 0;
 
@@ -114,7 +111,6 @@ public class MarketSpace {
 
     if (!cancel) {
       cart.add(computer);
-      
       Order order = new Order(computer);
       OrderService service = new OrderService();
       service.create(order);
@@ -163,10 +159,3 @@ public class MarketSpace {
     this.strategy.sort(cart);
   }
 }
-
-  // products.values().forEach((p) -> {
-      //   if (components.containsKey(p.getId())) {
-      //     p.setQuantity(p.getQuantity() - components.get(p.getId()).getQuantity());
-      //     // System.out.println(p);
-      //     servicep.update(p);
-      //   }
