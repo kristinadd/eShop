@@ -95,7 +95,7 @@ public class MarketSpace {
           //computer is decorator pathern
           Product p = new Product();
           try {
-            p = (Product) product.clone(); // clone new product;
+            p = (Product) product.clone();
             p.setQuantity(1);
           } catch (CloneNotSupportedException ex) {
             ex.printStackTrace();
@@ -137,9 +137,7 @@ public class MarketSpace {
     //     System.out.println(entry.getKey() + ": " + entry.getValue());
 
         products.forEach((k,v) -> System.out.println(k + ":" + v ));
-        // ^ the same as the for loop above it 
-
-        // -1 , 0 
+        // ^ the same as the for loop above it but more concise
       System.out.println(-1 + ": " + "Cancel");
       System.out.println(0 + ": " + "Done");
 
