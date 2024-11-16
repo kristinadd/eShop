@@ -140,7 +140,6 @@ public class Oms {
     }
   }
   
-
   public void cancel() {
     System.out.println("*** Select an order to cancel ***");
     all();
