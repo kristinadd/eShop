@@ -5,9 +5,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
-
 import javax.swing.plaf.basic.BasicSplitPaneUI.KeyboardDownRightHandler;
-
 import com.kristina.ecom.app.Order;
 import com.kristina.ecom.app.OrderService;
 import com.kristina.ecom.app.ProductService;
@@ -42,7 +40,6 @@ public class Oms {
           read();
           break;
         case 5:
-          //orderUpdateMenu();
           update();
           break;
         case 6:
@@ -95,27 +92,16 @@ public class Oms {
   public void deleteProductFromOrder(Order order) {
     System.out.println("Select the product to delete:");
     
-    // Display products with indices
     for (int i = 0; i < order.getProducts().size(); i++) {
       System.out.println((i + 1) + ": " + order.getProducts().get(i));
     }
-  
-    // Get user input for product selection
     int productIndex = sc.nextInt() - 1;
-  
-    // Validate the index
     if (productIndex < 0 || productIndex >= order.getProducts().size()) {
       System.out.println("Invalid selection. Please try again.");
       return;
     }
-  
-    // Get the selected product
     Product product = order.getProducts().get(productIndex);
-  
-    // Remove product from order
     order.getProducts().remove(productIndex);
-  
-    // Attempt to delete the product from the database
     if (service.delete(order.getId(), product.getId()) > 1 ) {
       System.out.println("Product deleted from the order");
     } else {
@@ -152,24 +138,6 @@ public class Oms {
       service.update(order); // update the description ...
       // Fix the description 
     }
-
-  //   // int productId = sc.next(); // sc.next() returns a String and it requires an int conversion
-  //   // int productId = Integer.parseInt(sc.next()); // Convert the String to an int
-  //   int productId = sc.nextInt(); // Use sc.nextInt() to directly get an int
-  //   Product product = productService.get(productId);
-  //   System.out.println("What quantity do you want: ");
-  //   int quantity = sc.nextInt();
-
-  //   c
-  //     product.setQuantity(quantity);
-  //     order.getProducts().add(product);
-  //     // Attempt to add the product to the order
-  //     if (service.add(order, product) > 0) {
-  //       System.out.println("Product added to the order");
-  //     } else {
-  //       System.out.println("Add failed");
-  //     }
-  //   }
   }
   
 
