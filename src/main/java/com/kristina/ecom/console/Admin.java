@@ -4,7 +4,6 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
-
 import com.kristina.ecom.app.Product;
 import com.kristina.ecom.app.ProductService;
 
@@ -61,16 +60,12 @@ public class Admin {
     };
     
     System.out.println("\n*** Product Admin ***");
-    // can use for loop too
-    Arrays.stream(adminMenu).forEach(System.out::println); // functional programming
+    Arrays.stream(adminMenu).forEach(System.out::println);
   }
 
   public void all() {
-    // for (Product product : service.getAll())
-    //    System.out.println(product.getId() + ":" + product);
-
       Arrays.stream(service.getAll().toArray()).forEach(
-        product -> System.out.println(((Product)product).getId() + ":" + product)); // lambda
+        product -> System.out.println(((Product)product).getId() + ":" + product));
   }
 
   public void read() {
@@ -111,18 +106,15 @@ public class Admin {
     all();
     int id = sc.nextInt();
     Product product = service.get(id);
-    // to go to the next line use this:
     sc.nextLine();
 
     System.out.print("Product name:");
     String name = sc.nextLine();
-    // isEmpty
     if (name != "" ) {
       product.setName(name);
     }
     System.out.print("Product price:");
     String price = sc.nextLine();
-    // also price can't be empty
     if (price != "" ) {
      product.setPrice(Double.parseDouble(price));
     }
