@@ -39,31 +39,6 @@ public class MarketSpace {
     return instance;
   }
 
-  // public void loadProducts() {
-  //   try {
-  //     Scanner sc = new Scanner(new File("resources/products.csv"));
-  //     // needed to change it to the full path
-
-  //     String[] tokens = null;
-  //     int i = 1;
-  //     while (sc.hasNextLine()) {
-  //       tokens = sc.nextLine().split(",");
-  //       Product product = new Product("Component", tokens[0], Double.parseDouble(tokens[1]), tokens[2]);
-  //       products.put(i++, product);
-  //     }
-  //     } catch (FileNotFoundException ex){
-  //       System.out.println("File not found");
-  //     }
-  //     System.out.println(products.size());
-  // }
-
-  // public void loadDB() {
-  //     // for (Product product : new ProductService().getAll())
-  //     //   this.products.put(product.getId(), product);
-
-  //       new ProductService().getAll().forEach((product) -> this.products.put(product.getId(), product));
-  // }
-
   public void buy() {
     new ProductService().getAll().forEach((product) -> this.products.put(product.getId(), product)); // load products from db
     Computer computer = new ComputerBase();
@@ -92,7 +67,6 @@ public class MarketSpace {
           System.out.println("Out of stock. Select another product.");
 
         } else {
-          //computer is decorator pathern
           Product p = new Product();
           try {
             p = (Product) product.clone();
