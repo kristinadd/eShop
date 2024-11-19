@@ -163,12 +163,15 @@ public class Oms {
       } catch (CloneNotSupportedException e) {
           e.printStackTrace();
       }
-      order.getProducts().add(productInOrder); // pass the copy of the object
+      order.getProducts().add(productInOrder); // pass the copy of the object not the original object 
       order.setDescription(order.getDescription() + productInOrder.getName() + " ");
       order.setTotal(order.getTotal() + (float) productInOrder.getPrice() * quantity);
       order.setDate(LocalDateTime.now());
       service.updateProductsInOrder(order, productInOrder);
       service.update(order);
+      productFromStock.setQuantity(productFromStock.getQuantity() - quantity);
+      productService.update(productFromStock);
+
     }
   }
   
