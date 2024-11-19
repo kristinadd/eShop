@@ -28,7 +28,6 @@ public class OrderDAOMySql implements DAO<String, Order> {
     Connection conn = datasource.getConnection();
     String query = "INSERT INTO orderDetails VALUES(?, ?, ?)";
     
-    
     PreparedStatement stat = conn.prepareStatement(query);
     stat = conn.prepareStatement(query);
       stat.setString(1, order.getId());

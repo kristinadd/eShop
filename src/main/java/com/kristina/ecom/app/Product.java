@@ -87,7 +87,7 @@ public class Product implements Cloneable {
   //   return new Product(this.id, this.name, this.price, this.quantity, this.img);
   // }
 
-  @Override 
+  @Override // shallow copy or deep copy ??
   public Object clone() throws CloneNotSupportedException {
     return super.clone();
   }
