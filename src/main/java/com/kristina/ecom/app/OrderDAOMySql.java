@@ -165,7 +165,8 @@ public class OrderDAOMySql implements DAO<String, Order> {
       int rows = 0;
       Connection conn = datasource.getConnection();
       String query = "DELETE FROM orderDetails WHERE oid=? AND pid=?";
-
+      
+      // Order details
       PreparedStatement stat = conn.prepareStatement(query);
       stat.setString(1, oid); 
       stat.setInt(2, pid); 

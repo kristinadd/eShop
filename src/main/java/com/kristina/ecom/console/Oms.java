@@ -36,16 +36,16 @@ public class Oms {
         case 2:
           delete();
           break;
-        case 4:
+        case 3:
           read();
           break;
-        case 5:
+        case 4:
           update();
           break;
-        case 6:
+        case 5:
           cancel();
           break;
-        case 7:
+        case 6:
           return;
         default:
           System.out.println("Invalid choice. Please try again.");
@@ -57,10 +57,10 @@ public class Oms {
     String[] omsMenu = {
       "1: All orders",
       "2: Delete",
-      "4: Read",
-      "5: Update",
-      "6: Cancel",
-      "7: Return to main menu"
+      "3: Read",
+      "4: Update",
+      "5: Cancel",
+      "6: Return to main menu"
     };
     
     System.out.println("\n*** Order Management System ***");
@@ -102,6 +102,8 @@ public class Oms {
     }
     Product product = order.getProducts().get(productIndex);
     order.getProducts().remove(productIndex);
+    order.update(); // memory
+    service.update(order); // database
     if (service.delete(order.getId(), product.getId()) > 1 ) {
       System.out.println("Product deleted from the order");
     } else {
@@ -168,10 +170,10 @@ public class Oms {
       order.setTotal(order.getTotal() + (float) productInOrder.getPrice() * quantity);
       order.setDate(LocalDateTime.now());
       service.updateProductsInOrder(order, productInOrder);
+      order.update();
       service.update(order);
       productFromStock.setQuantity(productFromStock.getQuantity() - quantity);
       productService.update(productFromStock);
-
     }
   }
   
@@ -261,21 +263,26 @@ public class Oms {
       productFromOrder.setQuantity(0);
       productService.update(productFromStock);
       order.getProducts().remove(productIndex - 1);
+      order.update();
       service.delete(order.getId(), productFromOrder.getId());
-    } else if (quantityFromUser > productFromOrder.getQuantity()) {
+    } else if (quantityFromUser > productFromOrder.getQuantity()) {  // increase
         int difference = quantityFromUser - productFromOrder.getQuantity();
         if (productFromStock.getQuantity() >= difference) {
           productFromOrder.setQuantity(quantityFromUser);
           productFromStock.setQuantity(productFromStock.getQuantity() - difference);
           productService.update(productFromStock);
+          order.update();
+          service.update(order);
           System.out.println("The new quantity of the order is: " + productFromOrder.getQuantity());
         } else {
           System.out.println("Sorry! Not enough stock. The stock has only " + productFromStock.getQuantity() + " products");
         }
-    } else {
+    } else { // decrease
       int difference = productFromOrder.getQuantity() - quantityFromUser;
       productFromOrder.setQuantity(quantityFromUser);
       productFromStock.setQuantity(productFromStock.getQuantity() + difference);
+      order.update();
+      service.update(order);
       productService.update(productFromStock);
       System.out.println("The new quantity of the product in the order is: " + productFromOrder.getQuantity());
     }
