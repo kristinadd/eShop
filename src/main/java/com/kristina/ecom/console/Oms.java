@@ -67,9 +67,44 @@ public class Oms {
     Arrays.stream(omsMenu).forEach(System.out::println);
   }
 
+  private void productUpdate(Order order) {
+    while (true) {
+      productUpdateMenu(order);
+      int c = sc.nextInt();
+
+      switch (c) {
+        case 1:
+          deleteProductFromOrder(order);
+          break;
+        case 2:
+        addProductToOrder(order);
+          break;
+        case 3:
+          updateProducts(order);
+          break;
+        case 4:
+          return;
+        default:
+          System.out.println("Invalid choice. Please try again.");
+      }
+    }
+  }
+
+  private void productUpdateMenu(Order order) {
+    String[] orderUpdateMenu = {
+      "1: Delete a product from the order",
+      "2: Add a product to the order",
+      "3: Update existing product in the order",
+      "4: Return to order managment menu"
+    };
+
+    System.out.println("\n*** Order Update Menu ***");
+    System.out.println(order);
+    Arrays.stream(orderUpdateMenu).forEach(System.out::println);
+  }
+
   public void all() {
     Arrays.stream(service.getAll().toArray()).forEach(System.out::println);
-
   }
 
   public void read() {
@@ -110,37 +145,6 @@ public class Oms {
       System.out.println("Delete failed");
     }
   }
-
-  // public void addProductToOrder(Order order) {
-  //   ProductService productService = new ProductService();
-  //   List<Product> products =  productService.getAll();
-  //   for (int i =0; i < products.size(); i++) {
-  //     System.out.println((i+1) + " " + products.get(i));
-  //   }
-  //   System.out.println("Select the product to add to the order:");
-  //   int productIndex = sc.nextInt(); // index of the product in the list
-  //   System.out.println("What quantity do you want: ");
-  //   int quantity = sc.nextInt();
-  //   Product product = products.get(productIndex -1);
-
-  //   if (quantity > product.getQuantity()) {
-  //       System.out.println("Sorry! Not enough stock. The stock has only " + product.getQuantity() + " products");
-  //   } else {
-  //     System.out.println("Product added to the order");
-  //     try {
-  //         Product productInOrder = (Product) product.clone();
-  //         productInOrder.setQuantity(quantity);
-  //     } catch (CloneNotSupportedException e) {
-  //         e.printStackTrace();
-  //     }
-  //     order.getProducts().add(product); // passed by reference
-  //     order.setDescription(order.getDescription() + product.getName() + " ");
-  //     order.setTotal(order.getTotal() + (float) product.getPrice() * quantity);
-  //     order.setDate(LocalDateTime.now());
-  //     service.updateProductsInOrder(order, product);
-  //     service.update(order);
-  //   }
-  // }
 
   public void addProductToOrder(Order order) {
     ProductService productService = new ProductService();
@@ -207,42 +211,6 @@ public class Oms {
     }
   }
 
-  private void productUpdateMenu(Order order) {
-    String[] orderUpdateMenu = {
-      "1: Delete a product from the order",
-      "2: Add a product to the order",
-      "3: Update existing product in the order",
-      "4: Return to order managment menu"
-    };
-
-    System.out.println("\n*** Order Update Menu ***");
-    System.out.println(order);
-    Arrays.stream(orderUpdateMenu).forEach(System.out::println);
-  }
-
-  private void productUpdate(Order order) {
-    while (true) {
-      productUpdateMenu(order);
-      int c = sc.nextInt();
-
-      switch (c) {
-        case 1:
-          deleteProductFromOrder(order);
-          break;
-        case 2:
-        addProductToOrder(order);
-          break;
-        case 3:
-          updateProducts(order);
-          break;
-        case 4:
-          return;
-        default:
-          System.out.println("Invalid choice. Please try again.");
-      }
-    }
-  }
-
   private void updateProducts(Order order) {
     System.out.println("Select the product to be updated:");
     int i = 1; 
@@ -257,7 +225,7 @@ public class Oms {
     System.out.println("What quantity do you want: ");
     int quantityFromUser = sc.nextInt();
 
-    if (quantityFromUser == 0) { //to do: only possitive numbers
+    if (quantityFromUser == 0) { //to do: only possitive numbers // remove
       System.out.println("Delete the product from the order and return the product to the stock");
       productFromStock.setQuantity(productFromStock.getQuantity() + productFromOrder.getQuantity());
       productFromOrder.setQuantity(0);
