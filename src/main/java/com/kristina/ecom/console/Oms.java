@@ -6,6 +6,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 import javax.swing.plaf.basic.BasicSplitPaneUI.KeyboardDownRightHandler;
+
+import com.fasterxml.jackson.databind.ser.std.StdKeySerializers.Default;
 import com.kristina.ecom.app.Order;
 import com.kristina.ecom.app.OrderService;
 import com.kristina.ecom.app.ProductService;
@@ -67,35 +69,12 @@ public class Oms {
     Arrays.stream(omsMenu).forEach(System.out::println);
   }
 
-  private void productUpdate(Order order) {
-    while (true) {
-      productUpdateMenu(order);
-      int c = sc.nextInt();
-
-      switch (c) {
-        case 1:
-          deleteProductFromOrder(order);
-          break;
-        case 2:
-        addProductToOrder(order);
-          break;
-        case 3:
-          updateProducts(order);
-          break;
-        case 4:
-          return;
-        default:
-          System.out.println("Invalid choice. Please try again.");
-      }
-    }
-  }
-
   private void productUpdateMenu(Order order) {
     String[] orderUpdateMenu = {
       "1: Delete a product from the order",
       "2: Add a product to the order",
       "3: Update existing product in the order",
-      "4: Return to order managment menu"
+      "4: Done"
     };
 
     System.out.println("\n*** Order Update Menu ***");
@@ -138,12 +117,12 @@ public class Oms {
     Product product = order.getProducts().get(productIndex);
     order.getProducts().remove(productIndex);
     order.update(); // memory
-    service.update(order); // database
-    if (service.delete(order.getId(), product.getId()) > 1 ) {
-      System.out.println("Product deleted from the order");
-    } else {
-      System.out.println("Delete failed");
-    }
+    // service.update(order); // database
+    // if (service.delete(order.getId(), product.getId()) > 1 ) {
+    //   System.out.println("Product deleted from the order");
+    // } else {
+    //   System.out.println("Delete failed");
+    // }
   }
 
   public void addProductToOrder(Order order) {
@@ -184,7 +163,7 @@ public class Oms {
   public void cancel() {
     System.out.println("*** Select an order to cancel ***");
     all();
-    if (service.cancel(sc.next()) == 0)
+    if (service.cancel(sc.next()) > 0)
       System.out.println("Order canceled");
     else
       System.out.println("Order failed");
@@ -193,23 +172,50 @@ public class Oms {
   public void update() {
     System.out.println("*** Select an order to update ***");
     all();
-    int OrderID = sc.nextInt();
-    Order order = service.get(String.valueOf(OrderID));
-    sc.nextLine();
 
-    String datetime = LocalDateTime.now().toString();
-    if (!datetime.isEmpty()) {
-      order.setDate(LocalDateTime.parse(datetime));
+    Order order = service.get(String.valueOf(sc.nextInt())); // 33
+    order.setDate(LocalDateTime.now());
+    // sc.nextLine();
+
+    boolean isDirty = false;
+    boolean updating = true;
+    while (updating) {
+      productUpdateMenu(order);
+      int c = sc.nextInt();
+
+      switch (c) {
+        case 1:
+          deleteProductFromOrder(order);
+          isDirty = true;
+          break;
+        case 2:
+        addProductToOrder(order);
+        isDirty = true;
+          break;
+        case 3:
+          updateProducts(order);
+          isDirty = true;
+          break;
+        case 4:
+          updating = false;
+          break;
+          // return; it works but thats not the correct way to write it
+        default:
+          System.out.println("Invalid choice. Please try again.");
+      }
     }
 
-    productUpdate(order);
-
-    if (service.update(order) == 1) {
-      System.out.println("Order updated");
+    if (isDirty == true) {
+      if (service.update(order) == 1) {
+        System.out.println("Order updated!");
+      } else {
+        System.out.println("Update failed");
+      }
     } else {
-      System.out.println("Update failed");
-    }
+      System.out.println("No change");
+    } 
   }
+
 
   private void updateProducts(Order order) {
     System.out.println("Select the product to be updated:");
@@ -225,7 +231,7 @@ public class Oms {
     System.out.println("What quantity do you want: ");
     int quantityFromUser = sc.nextInt();
 
-    if (quantityFromUser == 0) { //to do: only possitive numbers // remove
+    if (quantityFromUser == 0) { // remove
       System.out.println("Delete the product from the order and return the product to the stock");
       productFromStock.setQuantity(productFromStock.getQuantity() + productFromOrder.getQuantity());
       productFromOrder.setQuantity(0);
@@ -256,3 +262,9 @@ public class Oms {
     }
   }
 }
+
+
+// FE doesn't need to know what's updated
+// BE that needs to handle the update logic
+// add, delete, update products in order
+
