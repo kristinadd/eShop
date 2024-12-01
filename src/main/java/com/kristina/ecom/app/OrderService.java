@@ -6,7 +6,7 @@ import com.kristina.ecom.res.DAO;
 import java.sql.SQLException;
 
 public class OrderService {
-  private DAO<String, Order> dao;
+  private DAO<String, Order> dao; // interface
   private DAO<Integer, Product> daoP;
 
   public OrderService() {
@@ -73,16 +73,47 @@ public class OrderService {
     return rows;
   }
 
-  public int delete(String oid, int pid) {
-    int rows = 0;
+  // delete product from order
+  // public int delete(String oid, int pid) {
+  //   int rows = 0;
+  //   try {
+  //     // downcast to OrderDAOMySql to access the delete method
+  //     rows = ((OrderDAOMySql)dao).delete(oid, pid);
+  //   } catch (SQLException ex) {
+  //     ex.printStackTrace();
+  //   }
+  //   return rows;
+  // }
+
+  public boolean deleteProductFromOrder(Order order, int productIndex) {
     try {
-      // downcast to OrderDAOMySql to access the delete method
-      rows = ((OrderDAOMySql)dao).delete(oid, pid);
+        // Validate product index
+        if (productIndex < 0 || productIndex >= order.getProducts().size()) {
+            return false; // Invalid product index
+        }
+
+        // Get the product to delete
+        Product product = order.getProducts().get(productIndex);
+
+        // Remove the product from the order
+        order.getProducts().remove(productIndex);
+
+        // Update the order in memory
+        order.update();
+
+        // Update the order in the database
+        dao.update(order); // Update the order (description, total, etc.)
+
+        // Delete the product from the orderDetails table in the database
+        ((OrderDAOMySql) dao).delete(order.getId(), product.getId());
+
+        return true; // Successful deletion
     } catch (SQLException ex) {
-      ex.printStackTrace();
+        ex.printStackTrace();
+        return false; // Indicate failure
     }
-    return rows;
   }
+
 
   public int cancel(String id) {
     int rows = 0;
