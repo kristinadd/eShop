@@ -73,18 +73,6 @@ public class OrderService {
     return rows;
   }
 
-  // delete product from order
-  // public int delete(String oid, int pid) {
-  //   int rows = 0;
-  //   try {
-  //     // downcast to OrderDAOMySql to access the delete method
-  //     rows = ((OrderDAOMySql)dao).delete(oid, pid);
-  //   } catch (SQLException ex) {
-  //     ex.printStackTrace();
-  //   }
-  //   return rows;
-  // }
-
   public boolean deleteProductFromOrder(Order order, int productIndex) {
     try {
         // Validate product index
@@ -141,5 +129,44 @@ public class OrderService {
     }
 
     return rows;
+  }
+
+  public boolean updateProductInOrder(Order order, int productIndex, int newQuantity) {
+    try {
+        // Validate product index
+        if (productIndex < 0 || productIndex >= order.getProducts().size()) {
+            return false; // Invalid product index
+        }
+
+        Product productFromOrder = order.getProducts().get(productIndex);
+        Product productFromStock = daoP.read(productFromOrder.getId()); // Fetch product from stock
+
+        if (newQuantity == 0) { // Remove product from the order
+            productFromStock.setQuantity(productFromStock.getQuantity() + productFromOrder.getQuantity());
+            daoP.update(productFromStock); // Update stock
+            order.getProducts().remove(productIndex);
+        } else if (newQuantity > productFromOrder.getQuantity()) { // Increase quantity
+            int difference = newQuantity - productFromOrder.getQuantity();
+            if (productFromStock.getQuantity() >= difference) {
+                productFromOrder.setQuantity(newQuantity);
+                productFromStock.setQuantity(productFromStock.getQuantity() - difference);
+                daoP.update(productFromStock); // Update stock
+            } else {
+                return false; // Not enough stock
+            }
+        } else { // Decrease quantity
+            int difference = productFromOrder.getQuantity() - newQuantity;
+            productFromOrder.setQuantity(newQuantity);
+            productFromStock.setQuantity(productFromStock.getQuantity() + difference);
+            daoP.update(productFromStock); // Update stock
+        }
+
+        // Update the order in the database
+        dao.update(order); // Persist changes to the database
+        return true; // Success
+    } catch (SQLException ex) {
+        ex.printStackTrace();
+        return false; // Failure
+    }
   }
 }

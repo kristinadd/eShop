@@ -100,28 +100,6 @@ public class Oms {
       System.out.println("Delete failed");
   }
 
-  // public void deleteProductFromOrder(Order order) {
-  //   System.out.println("Select the product to delete:");
-    
-  //   for (int i = 0; i < order.getProducts().size(); i++) {
-  //     System.out.println((i + 1) + ": " + order.getProducts().get(i));
-  //   }
-  //   int productIndex = sc.nextInt() - 1;
-  //   if (productIndex < 0 || productIndex >= order.getProducts().size()) {
-  //     System.out.println("Invalid selection. Please try again.");
-  //     return;
-  //   }
-  //   Product product = order.getProducts().get(productIndex);
-  //   order.getProducts().remove(productIndex);
-  //   order.update(); // memory
-  //   // service.update(order); // database
-  //   // if (service.delete(order.getId(), product.getId()) > 1 ) {
-  //   //   System.out.println("Product deleted from the order");
-  //   // } else {
-  //   //   System.out.println("Delete failed");
-  //   // }
-  // }
-
   public void deleteProductFromOrder(Order order) {
     System.out.println("Select the product to delete:");
 
@@ -139,7 +117,6 @@ public class Oms {
         System.out.println("Invalid selection or deletion failed. Please try again.");
     }
   }
-
 
 
   public void addProductToOrder(Order order) {
@@ -235,53 +212,26 @@ public class Oms {
 
 
   private void updateProducts(Order order) {
-    System.out.println("Select the product to be updated:");
-    int i = 1; 
-    for (Product p : order.getProducts()) {
-      System.out.println(i++ + ": " + p);
+    System.out.println("Select the product to update:");
+    
+    // Display products
+    for (int i = 0; i < order.getProducts().size(); i++) {
+        System.out.println((i + 1) + ": " + order.getProducts().get(i));
     }
 
-    int productIndex = sc.nextInt();
-    Product productFromOrder = order.getProducts().get(productIndex - 1);
-    ProductService productService = new ProductService();
-    Product productFromStock = productService.get(productFromOrder.getId());
-    System.out.println("What quantity do you want: ");
-    int quantityFromUser = sc.nextInt();
+    // Get user input
+    int productIndex = sc.nextInt() - 1;
+    System.out.println("Enter the new quantity (0 to remove):");
+    int newQuantity = sc.nextInt();
 
-    if (quantityFromUser == 0) { // remove
-      System.out.println("Delete the product from the order and return the product to the stock");
-      productFromStock.setQuantity(productFromStock.getQuantity() + productFromOrder.getQuantity());
-      productFromOrder.setQuantity(0);
-      productService.update(productFromStock);
-      order.getProducts().remove(productIndex - 1);
-      order.update();
-      // service.deleteProductFromOrder(order.getId(), productFromOrder.getId()); needs fix !
-    } else if (quantityFromUser > productFromOrder.getQuantity()) {  // increase
-        int difference = quantityFromUser - productFromOrder.getQuantity();
-        if (productFromStock.getQuantity() >= difference) {
-          productFromOrder.setQuantity(quantityFromUser);
-          productFromStock.setQuantity(productFromStock.getQuantity() - difference);
-          productService.update(productFromStock);
-          order.update();
-          service.update(order);
-          System.out.println("The new quantity of the order is: " + productFromOrder.getQuantity());
-        } else {
-          System.out.println("Sorry! Not enough stock. The stock has only " + productFromStock.getQuantity() + " products");
-        }
-    } else { // decrease
-      int difference = productFromOrder.getQuantity() - quantityFromUser;
-      productFromOrder.setQuantity(quantityFromUser);
-      productFromStock.setQuantity(productFromStock.getQuantity() + difference);
-      order.update();
-      service.update(order);
-      productService.update(productFromStock);
-      System.out.println("The new quantity of the product in the order is: " + productFromOrder.getQuantity());
+    // Delegate the update to the service
+    boolean success = service.updateProductInOrder(order, productIndex, newQuantity);
+
+    // Display result
+    if (success) {
+        System.out.println("Product updated successfully.");
+    } else {
+        System.out.println("Update failed. Please check stock or input validity.");
     }
   }
 }
-
-
-// FE doesn't need to know what's updated
-// BE that needs to handle the update logic
-// add, delete, update products in order
-
