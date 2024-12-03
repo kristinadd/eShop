@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import com.kristina.ecom.res.DAO;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 
 public class OrderService {
   private DAO<String, Order> dao; // interface
@@ -79,22 +80,16 @@ public class OrderService {
         if (productIndex < 0 || productIndex >= order.getProducts().size()) {
             return false; // Invalid product index
         }
-
         // Get the product to delete
         Product product = order.getProducts().get(productIndex);
-
         // Remove the product from the order
         order.getProducts().remove(productIndex);
-
         // Update the order in memory
         order.update();
-
         // Update the order in the database
         dao.update(order); // Update the order (description, total, etc.)
-
         // Delete the product from the orderDetails table in the database
         ((OrderDAOMySql) dao).delete(order.getId(), product.getId());
-
         return true; // Successful deletion
     } catch (SQLException ex) {
         ex.printStackTrace();
@@ -137,10 +132,8 @@ public class OrderService {
         if (productIndex < 0 || productIndex >= order.getProducts().size()) {
             return false; // Invalid product index
         }
-
         Product productFromOrder = order.getProducts().get(productIndex);
         Product productFromStock = daoP.read(productFromOrder.getId()); // Fetch product from stock
-
         if (newQuantity == 0) { // Remove product from the order
             productFromStock.setQuantity(productFromStock.getQuantity() + productFromOrder.getQuantity());
             daoP.update(productFromStock); // Update stock
@@ -167,6 +160,40 @@ public class OrderService {
     } catch (SQLException ex) {
         ex.printStackTrace();
         return false; // Failure
+    }
+  }
+
+    public boolean addProductToOrder(Order order, int productId, int quantity) {
+    try {
+        // Fetch the product from stock
+        Product productFromStock = daoP.read(productId);
+        if (productFromStock == null) {
+            System.out.println("Product not found.");
+            return false;
+        }
+        // Check if the requested quantity is available
+        if (quantity > productFromStock.getQuantity()) {
+            System.out.println("Not enough stock available.");
+            return false;
+        }
+        // Clone the product to create a copy for the order
+        Product productInOrder = (Product) productFromStock.clone();
+        productInOrder.setQuantity(quantity);
+        // Add the product to the order
+        order.getProducts().add(productInOrder);
+        // Update the order details
+        order.setDescription(order.getDescription() + productInOrder.getName() + " ");
+        order.setTotal(order.getTotal() + (float) productInOrder.getPrice() * quantity);
+        order.setDate(LocalDateTime.now());
+        // Update the stock in the database
+        productFromStock.setQuantity(productFromStock.getQuantity() - quantity);
+        daoP.update(productFromStock);
+        // Update the order in the database
+        dao.update(order);
+        return true; // Product added successfully
+    } catch (CloneNotSupportedException | SQLException e) {
+        e.printStackTrace();
+        return false; // Failure in adding the product
     }
   }
 }
