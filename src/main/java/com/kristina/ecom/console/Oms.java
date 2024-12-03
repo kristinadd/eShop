@@ -106,11 +106,8 @@ public class Oms {
     for (int i = 0; i < order.getProducts().size(); i++) {
         System.out.println((i + 1) + ": " + order.getProducts().get(i));
     }
-
     int productIndex = sc.nextInt() - 1;
-
     boolean success = service.deleteProductFromOrder(order, productIndex);
-
     if (success) {
         System.out.println("Product deleted successfully.");
     } else {
@@ -119,40 +116,72 @@ public class Oms {
   }
 
 
-  public void addProductToOrder(Order order) {
-    ProductService productService = new ProductService();
-    List<Product> products =  productService.getAll();
-    for (int i =0; i < products.size(); i++) {
-      System.out.println((i+1) + " " + products.get(i));
-    }
-    System.out.println("Select the product to add to the order:");
-    int productIndex = sc.nextInt(); // index of the product in the list
-    System.out.println("What quantity do you want: ");
-    int quantity = sc.nextInt();
-    Product productFromStock = products.get(productIndex -1); 
-    Product productInOrder = null;
+  // public void addProductToOrder(Order order) {
+  //   ProductService productService = new ProductService();
+  //   List<Product> products =  productService.getAll();
+  //   for (int i =0; i < products.size(); i++) {
+  //     System.out.println((i+1) + " " + products.get(i));
+  //   }
+  //   System.out.println("Select the product to add to the order:");
+  //   int productIndex = sc.nextInt(); // index of the product in the list
+  //   System.out.println("What quantity do you want: ");
+  //   int quantity = sc.nextInt();
+  //   Product productFromStock = products.get(productIndex -1); 
+  //   Product productInOrder = null;
 
-    if (quantity > productFromStock.getQuantity()) {
-        System.out.println("Sorry! Not enough stock. The stock has only " + productFromStock.getQuantity() + " products");
+  //   if (quantity > productFromStock.getQuantity()) {
+  //       System.out.println("Sorry! Not enough stock. The stock has only " + productFromStock.getQuantity() + " products");
+  //   } else {
+  //     System.out.println("Product added to the order");
+  //     try {
+  //         productInOrder = (Product) productFromStock.clone(); // creating a copy of the object
+  //         productInOrder.setQuantity(quantity);
+  //     } catch (CloneNotSupportedException e) {
+  //         e.printStackTrace();
+  //     }
+  //     order.getProducts().add(productInOrder); // pass the copy of the object not the original object 
+  //     order.setDescription(order.getDescription() + productInOrder.getName() + " ");
+  //     order.setTotal(order.getTotal() + (float) productInOrder.getPrice() * quantity);
+  //     order.setDate(LocalDateTime.now());
+  //     service.updateProductsInOrder(order, productInOrder);
+  //     order.update();
+  //     service.update(order);
+  //     productFromStock.setQuantity(productFromStock.getQuantity() - quantity);
+  //     productService.update(productFromStock);
+  //   }
+  // }
+
+  public void addProductToOrder(Order order) {
+    // Fetch all available products
+    ProductService productService = new ProductService();
+    List<Product> products = productService.getAll();
+    // Display the available products
+    System.out.println("Available products:");
+    for (int i = 0; i < products.size(); i++) {
+        System.out.println((i + 1) + ": " + products.get(i));
+    }
+    // Take user input for product selection and quantity
+    System.out.println("Select the product to add to the order:");
+    int productIndex = sc.nextInt() - 1;
+
+    if (productIndex < 0 || productIndex >= products.size()) {
+        System.out.println("Invalid product selection.");
+        return;
+    }
+    Product selectedProduct = products.get(productIndex);
+    System.out.println("Enter the quantity:");
+    int quantity = sc.nextInt();
+    // Delegate the addition to the service
+    boolean success = service.addProductToOrder(order, selectedProduct.getId(), quantity);
+    // Display the result
+    if (success) {
+        System.out.println("Product added successfully.");
     } else {
-      System.out.println("Product added to the order");
-      try {
-          productInOrder = (Product) productFromStock.clone(); // creating a copy of the object
-          productInOrder.setQuantity(quantity);
-      } catch (CloneNotSupportedException e) {
-          e.printStackTrace();
-      }
-      order.getProducts().add(productInOrder); // pass the copy of the object not the original object 
-      order.setDescription(order.getDescription() + productInOrder.getName() + " ");
-      order.setTotal(order.getTotal() + (float) productInOrder.getPrice() * quantity);
-      order.setDate(LocalDateTime.now());
-      service.updateProductsInOrder(order, productInOrder);
-      order.update();
-      service.update(order);
-      productFromStock.setQuantity(productFromStock.getQuantity() - quantity);
-      productService.update(productFromStock);
+        System.out.println("Failed to add product. Please check stock or try again.");
     }
   }
+
+
   
   public void cancel() {
     System.out.println("*** Select an order to cancel ***");
@@ -166,11 +195,8 @@ public class Oms {
   public void update() {
     System.out.println("*** Select an order to update ***");
     all();
-
     Order order = service.get(String.valueOf(sc.nextInt())); // 33
     order.setDate(LocalDateTime.now());
-    // sc.nextLine();
-
     boolean isDirty = false;
     boolean updating = true;
     while (updating) {
@@ -213,20 +239,16 @@ public class Oms {
 
   private void updateProducts(Order order) {
     System.out.println("Select the product to update:");
-    
     // Display products
     for (int i = 0; i < order.getProducts().size(); i++) {
         System.out.println((i + 1) + ": " + order.getProducts().get(i));
     }
-
     // Get user input
     int productIndex = sc.nextInt() - 1;
     System.out.println("Enter the new quantity (0 to remove):");
     int newQuantity = sc.nextInt();
-
     // Delegate the update to the service
     boolean success = service.updateProductInOrder(order, productIndex, newQuantity);
-
     // Display result
     if (success) {
         System.out.println("Product updated successfully.");
