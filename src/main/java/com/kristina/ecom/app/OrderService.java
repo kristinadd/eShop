@@ -74,30 +74,6 @@ public class OrderService {
     return rows;
   }
 
-  public boolean deleteProductFromOrder(Order order, int productIndex) {
-    try {
-        // Validate product index
-        if (productIndex < 0 || productIndex >= order.getProducts().size()) {
-            return false; // Invalid product index
-        }
-        // Get the product to delete
-        Product product = order.getProducts().get(productIndex);
-        // Remove the product from the order
-        order.getProducts().remove(productIndex);
-        // Update the order in memory
-        order.update();
-        // Update the order in the database
-        dao.update(order); // Update the order (description, total, etc.)
-        // Delete the product from the orderDetails table in the database
-        ((OrderDAOMySql) dao).delete(order.getId(), product.getId());
-        return true; // Successful deletion
-    } catch (SQLException ex) {
-        ex.printStackTrace();
-        return false; // Indicate failure
-    }
-  }
-
-
   public int cancel(String id) {
     int rows = 0;
     try {
@@ -126,35 +102,23 @@ public class OrderService {
     return rows;
   }
 
-  public boolean updateProductInOrder(Order order, int productIndex, int newQuantity) {
+  public boolean updateProductInOrder(Order order) { // new order
     try {
-        // Validate product index
-        if (productIndex < 0 || productIndex >= order.getProducts().size()) {
-            return false; // Invalid product index
-        }
-        Product productFromOrder = order.getProducts().get(productIndex);
-        Product productFromStock = daoP.read(productFromOrder.getId()); // Fetch product from stock
-        if (newQuantity == 0) { // Remove product from the order
-            productFromStock.setQuantity(productFromStock.getQuantity() + productFromOrder.getQuantity());
+        // if used only once, don't declare it 
+        Order oldOrder = dao.read(order.getId());
+        Product  productFromStock;
+        int difference;
+        
+        if (order.getProducts().size() == oldOrder.getProducts().size()) {
+          for (Product product : order.getProducts()) {
+            difference = product.getQuantity() - getProductQuantityById(oldOrder.getProducts(), product.getId());
+            productFromStock = daoP.read(product.getId());
+            productFromStock.setQuantity(productFromStock.getQuantity() - difference);
             daoP.update(productFromStock); // Update stock
-            order.getProducts().remove(productIndex);
-        } else if (newQuantity > productFromOrder.getQuantity()) { // Increase quantity
-            int difference = newQuantity - productFromOrder.getQuantity();
-            if (productFromStock.getQuantity() >= difference) {
-                productFromOrder.setQuantity(newQuantity);
-                productFromStock.setQuantity(productFromStock.getQuantity() - difference);
-                daoP.update(productFromStock); // Update stock
-            } else {
-                return false; // Not enough stock
-            }
-        } else { // Decrease quantity
-            int difference = productFromOrder.getQuantity() - newQuantity;
-            productFromOrder.setQuantity(newQuantity);
-            productFromStock.setQuantity(productFromStock.getQuantity() + difference);
-            daoP.update(productFromStock); // Update stock
-        }
-
+          }
+      }
         // Update the order in the database
+        order.update();
         dao.update(order); // Persist changes to the database
         return true; // Success
     } catch (SQLException ex) {
@@ -181,14 +145,11 @@ public class OrderService {
         productInOrder.setQuantity(quantity);
         // Add the product to the order
         order.getProducts().add(productInOrder);
-        // Update the order details
-        order.setDescription(order.getDescription() + productInOrder.getName() + " ");
-        order.setTotal(order.getTotal() + (float) productInOrder.getPrice() * quantity);
-        order.setDate(LocalDateTime.now());
         // Update the stock in the database
         productFromStock.setQuantity(productFromStock.getQuantity() - quantity);
         daoP.update(productFromStock);
         // Update the order in the database
+        order.update();
         dao.update(order);
         return true; // Product added successfully
     } catch (CloneNotSupportedException | SQLException e) {
@@ -196,4 +157,13 @@ public class OrderService {
         return false; // Failure in adding the product
     }
   }
+
+  // get the product quantity by its id in the oder 
+  private int getProductQuantityById(List<Product> products, int id){
+    for (Product p : products) 
+      if (p.getId() == id)
+        return p.getQuantity();
+
+    return 0; 
+  } 
 }

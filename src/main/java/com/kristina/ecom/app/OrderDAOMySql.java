@@ -176,33 +176,37 @@ public class OrderDAOMySql implements DAO<String, Order> {
     }
 
   public int update(Order order) throws SQLException {
-    String orderDetailsQuery = "UPDATE orderDetails SET quantity=? WHERE oid=? AND pid=?";
     String orderQuery = "UPDATE porder SET description=?, total=?, date_time=? WHERE id=?";
-    int rows = 0;
+    String deleteProductsQuery = "DELETE FROM orderDetails WHERE oid=?";
+    String insertProductsQuery = "INSERT INTO orderDetails VALUES(?, ?, ?)";
 
     Connection conn = datasource.getConnection();
-    conn.setAutoCommit(false);
+    conn.setAutoCommit(false); // using multiple queries
 
-    // OrderDetails table
-    PreparedStatement stat = conn.prepareStatement(orderDetailsQuery);
-    for (Product product : order.getProducts()) {
-      stat.setInt(3, product.getId());
-      stat.setString(2, order.getId());
-      stat.setInt(1, product.getQuantity());
-      stat.executeUpdate();
-    }
-
-    // Order table
-    stat = conn.prepareStatement(orderQuery);
+    // Update order in order table table
+    PreparedStatement stat = conn.prepareStatement(orderQuery);
     stat.setString(1,order.getDescription());
     stat.setFloat(2, order.getTotal());
     stat.setTimestamp(3, Timestamp.valueOf(order.getDate()));
     stat.setString(4, order.getId());
     stat.executeUpdate();
-    rows = stat.executeUpdate();
+
+    // delete all products for this order from orderDetails table
+    stat = conn.prepareStatement(deleteProductsQuery);
+    stat.setString(1,order.getId());
+    stat.executeUpdate();
+
+    // re-insert the latest products  belonging to this order into orderDetails table 
+    stat = conn.prepareStatement(insertProductsQuery);
+    for (Product product : order.getProducts()) {
+      stat.setString(1, order.getId());
+      stat.setInt(2, product.getId());
+      stat.setInt(3, product.getQuantity());
+      stat.executeUpdate();
+    }
 
     conn.commit();
     conn.close();
-    return rows;
+    return 1;
   }
 }
