@@ -15,16 +15,6 @@ public class OrderService {
     daoP = new ProductDAOMySql();
   }
 
-  public int updateProductsInOrder(Order order, Product product) {
-    int rows = 0;
-    try {
-      rows = ((OrderDAOMySql)dao).updateProductsInOrder(order, product);
-    } catch (SQLException ex) {
-      ex.printStackTrace();
-    }
-    return rows;
-  }
-
   public int create(Order order) {
     int rows  = 0;
     try {
@@ -102,59 +92,48 @@ public class OrderService {
     return rows;
   }
 
-  public boolean updateProductInOrder(Order order) { // new order
+  public boolean updateProductInOrder(Order order) {
     try {
-        // if used only once, don't declare it 
-        Order oldOrder = dao.read(order.getId());
+        Order oldOrder = dao.read(order.getId()); // if used only once, don't declare it 
         Product  productFromStock;
         int difference;
         
-        if (order.getProducts().size() == oldOrder.getProducts().size()) {
-          for (Product product : order.getProducts()) {
-            difference = product.getQuantity() - getProductQuantityById(oldOrder.getProducts(), product.getId());
-            productFromStock = daoP.read(product.getId());
-            productFromStock.setQuantity(productFromStock.getQuantity() - difference);
-            daoP.update(productFromStock); // Update stock
-          }
+      if (order.getProducts().size() == oldOrder.getProducts().size()) {
+        for (Product product : order.getProducts()) {
+          difference = product.getQuantity() - getProductQuantityById(oldOrder.getProducts(), product.getId());
+          productFromStock = daoP.read(product.getId());
+          productFromStock.setQuantity(productFromStock.getQuantity() - difference);
+          daoP.update(productFromStock);
+        }
       }
-        // Update the order in the database
-        order.update();
-        dao.update(order); // Persist changes to the database
-        return true; // Success
+      order.update();
+      dao.update(order);
+      return true;
     } catch (SQLException ex) {
-        ex.printStackTrace();
-        return false; // Failure
+      ex.printStackTrace();
+      return false;
     }
   }
 
-    public boolean addProductToOrder(Order order, int productId, int quantity) {
+  public int updateProductsInOrder(Order order, Product product) {
+    int rows = 0;
     try {
-        // Fetch the product from stock
-        Product productFromStock = daoP.read(productId);
-        if (productFromStock == null) {
-            System.out.println("Product not found.");
-            return false;
-        }
-        // Check if the requested quantity is available
-        if (quantity > productFromStock.getQuantity()) {
-            System.out.println("Not enough stock available.");
-            return false;
-        }
-        // Clone the product to create a copy for the order
-        Product productInOrder = (Product) productFromStock.clone();
-        productInOrder.setQuantity(quantity);
-        // Add the product to the order
-        order.getProducts().add(productInOrder);
-        // Update the stock in the database
-        productFromStock.setQuantity(productFromStock.getQuantity() - quantity);
-        daoP.update(productFromStock);
-        // Update the order in the database
+      rows = ((OrderDAOMySql)dao).updateProductsInOrder(order, product);
+    } catch (SQLException ex) {
+      ex.printStackTrace();
+    }
+    return rows;
+  }
+
+  // my version 
+  public boolean addProductToOrder(Order order) {
+    try {
         order.update();
         dao.update(order);
-        return true; // Product added successfully
-    } catch (CloneNotSupportedException | SQLException e) {
+        return true;
+    } catch (SQLException e) {
         e.printStackTrace();
-        return false; // Failure in adding the product
+        return false; 
     }
   }
 

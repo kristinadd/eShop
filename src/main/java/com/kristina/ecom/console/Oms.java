@@ -135,12 +135,21 @@ public class Oms {
 
     System.out.println("Enter the quantity:");
     int quantity = sc.nextInt();
+    // check the quantity on the FE, and give feedback to the user as soon as possible
+    if (quantity < 1) {
+      System.out.println("The quantity needs to be more than 1 in order to add the product");
+    } else { // quantity is more than 0
+      // then i need a productFromStock to compare it to 
+      // check the quantity in stock for the specific product; available , not available
+    }
 
-    // Delegate the addition to the service
-    // boolean success = service.addProductToOrder(order, selectedProduct.getId(), quantity);
+    // Clone the product to create a copy for the order
+    Product productInOrder = (Product) productFromStock.clone();
+    productInOrder.setQuantity(quantity);
+    order.getProducts().add(productInOrder);
+    productFromStock.setQuantity(productFromStock.getQuantity() - quantity);
+    
     boolean success = service.updateProductInOrder(order);
-
-
     // Display the result
     if (success) {
         System.out.println("Product added successfully.");
@@ -148,8 +157,6 @@ public class Oms {
         System.out.println("Failed to add product. Please check stock or try again.");
     }
   }
-
-
   
   public void cancel() {
     System.out.println("*** Select an order to cancel ***");
