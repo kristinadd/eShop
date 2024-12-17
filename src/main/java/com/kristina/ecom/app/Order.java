@@ -45,13 +45,15 @@ public class Order {
   }
 
   public void update() {
-    description = "Default computer";
-    total = 0;
+    ComputerBase base = new ComputerBase();
+    description = base.getDescription();
+    total = (float)base.getPrice();
+    
     for (Product product : products) {
       description += (" + " + product.getName()).repeat(product.getQuantity());
       total += product.getPrice() * product.getQuantity();
     }
-    System.out.println(description);
+    this.setDate(LocalDateTime.now());
   }
 
   public float getTotal() {
@@ -83,5 +85,3 @@ public class Order {
     return String.format("OrderID@%s: %s $%.2f", this.id, this.description, this.total);
   }
 }
-
-// OrderID@83: Default Computer + Ben's Picture + GPU 3080 Ti $6649.86

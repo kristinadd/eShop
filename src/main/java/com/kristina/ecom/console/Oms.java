@@ -101,78 +101,55 @@ public class Oms {
   }
 
   public void deleteProductFromOrder(Order order) {
-    System.out.println("Select the product to delete:");
+    int productIndex;
+    boolean invalid;
+    do {
+      System.out.println("Select the product to delete:");
+      for (int i = 0; i < order.getProducts().size(); i++) {
+          System.out.println((i + 1) + ": " + order.getProducts().get(i));
+      }
+    productIndex = sc.nextInt() - 1;
+    invalid = productIndex < 0 || productIndex >= order.getProducts().size();
+    if (invalid)
+      System.out.println("Invalid product, please choose again");
+    } while (invalid);
 
-    for (int i = 0; i < order.getProducts().size(); i++) {
-        System.out.println((i + 1) + ": " + order.getProducts().get(i));
-    }
-    int productIndex = sc.nextInt() - 1;
-    boolean success = service.deleteProductFromOrder(order, productIndex);
-    if (success) {
-        System.out.println("Product deleted successfully.");
-    } else {
-        System.out.println("Invalid selection or deletion failed. Please try again.");
-    }
+    // remove the product from the order
+    order.getProducts().remove(productIndex);
+    order.update();
   }
 
-
-  // public void addProductToOrder(Order order) {
-  //   ProductService productService = new ProductService();
-  //   List<Product> products =  productService.getAll();
-  //   for (int i =0; i < products.size(); i++) {
-  //     System.out.println((i+1) + " " + products.get(i));
-  //   }
-  //   System.out.println("Select the product to add to the order:");
-  //   int productIndex = sc.nextInt(); // index of the product in the list
-  //   System.out.println("What quantity do you want: ");
-  //   int quantity = sc.nextInt();
-  //   Product productFromStock = products.get(productIndex -1); 
-  //   Product productInOrder = null;
-
-  //   if (quantity > productFromStock.getQuantity()) {
-  //       System.out.println("Sorry! Not enough stock. The stock has only " + productFromStock.getQuantity() + " products");
-  //   } else {
-  //     System.out.println("Product added to the order");
-  //     try {
-  //         productInOrder = (Product) productFromStock.clone(); // creating a copy of the object
-  //         productInOrder.setQuantity(quantity);
-  //     } catch (CloneNotSupportedException e) {
-  //         e.printStackTrace();
-  //     }
-  //     order.getProducts().add(productInOrder); // pass the copy of the object not the original object 
-  //     order.setDescription(order.getDescription() + productInOrder.getName() + " ");
-  //     order.setTotal(order.getTotal() + (float) productInOrder.getPrice() * quantity);
-  //     order.setDate(LocalDateTime.now());
-  //     service.updateProductsInOrder(order, productInOrder);
-  //     order.update();
-  //     service.update(order);
-  //     productFromStock.setQuantity(productFromStock.getQuantity() - quantity);
-  //     productService.update(productFromStock);
-  //   }
-  // }
-
   public void addProductToOrder(Order order) {
-    // Fetch all available products
-    ProductService productService = new ProductService();
-    List<Product> products = productService.getAll();
-    // Display the available products
-    System.out.println("Available products:");
-    for (int i = 0; i < products.size(); i++) {
-        System.out.println((i + 1) + ": " + products.get(i));
-    }
-    // Take user input for product selection and quantity
-    System.out.println("Select the product to add to the order:");
-    int productIndex = sc.nextInt() - 1;
+    int productIndex;
+    boolean invalid;
+    do {
+      System.out.println("Select the product to be added:");
+      for (int i = 0; i < order.getProducts().size(); i++) {
+          System.out.println((i + 1) + ": " + order.getProducts().get(i));
+      }
+    productIndex = sc.nextInt() - 1;
+    invalid = productIndex < 0 || productIndex >= order.getProducts().size();
+    if (invalid)
+      System.out.println("Invalid product, please choose again");
+    } while (invalid);
 
-    if (productIndex < 0 || productIndex >= products.size()) {
-        System.out.println("Invalid product selection.");
-        return;
-    }
-    Product selectedProduct = products.get(productIndex);
     System.out.println("Enter the quantity:");
     int quantity = sc.nextInt();
-    // Delegate the addition to the service
-    boolean success = service.addProductToOrder(order, selectedProduct.getId(), quantity);
+    // check the quantity on the FE, and give feedback to the user as soon as possible
+    if (quantity < 1) {
+      System.out.println("The quantity needs to be more than 1 in order to add the product");
+    } else { // quantity is more than 0
+      // then i need a productFromStock to compare it to 
+      // check the quantity in stock for the specific product; available , not available
+    }
+
+    // Clone the product to create a copy for the order
+    Product productInOrder = (Product) productFromStock.clone();
+    productInOrder.setQuantity(quantity);
+    order.getProducts().add(productInOrder);
+    productFromStock.setQuantity(productFromStock.getQuantity() - quantity);
+    
+    boolean success = service.updateProductInOrder(order);
     // Display the result
     if (success) {
         System.out.println("Product added successfully.");
@@ -180,8 +157,6 @@ public class Oms {
         System.out.println("Failed to add product. Please check stock or try again.");
     }
   }
-
-
   
   public void cancel() {
     System.out.println("*** Select an order to cancel ***");
@@ -238,17 +213,30 @@ public class Oms {
 
 
   private void updateProducts(Order order) {
-    System.out.println("Select the product to update:");
-    // Display products
-    for (int i = 0; i < order.getProducts().size(); i++) {
-        System.out.println((i + 1) + ": " + order.getProducts().get(i));
-    }
     // Get user input
-    int productIndex = sc.nextInt() - 1;
-    System.out.println("Enter the new quantity (0 to remove):");
-    int newQuantity = sc.nextInt();
-    // Delegate the update to the service
-    boolean success = service.updateProductInOrder(order, productIndex, newQuantity);
+    int productIndex;
+    boolean invalid;
+    do {
+      System.out.println("Select the product to update:");
+      for (int i = 0; i < order.getProducts().size(); i++) {
+          System.out.println((i + 1) + ": " + order.getProducts().get(i));
+      }
+    productIndex = sc.nextInt() - 1;
+    invalid = productIndex < 0 || productIndex >= order.getProducts().size();
+    if (invalid)
+      System.out.println("Invalid product, please choose again");
+    } while (invalid);
+
+    System.out.println("Enter the new quantity ( 0 to remove ):");
+    // TbC: handle out of stock situation
+    int newQuantity =  sc.nextInt();
+
+    if (newQuantity == 0) 
+      order.getProducts().remove(productIndex);
+    else
+      order.getProducts().get(productIndex).setQuantity(newQuantity);
+
+    boolean success = service.updateProductInOrder(order);
     // Display result
     if (success) {
         System.out.println("Product updated successfully.");
