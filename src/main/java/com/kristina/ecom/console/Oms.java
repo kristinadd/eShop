@@ -102,7 +102,6 @@ public class Oms {
 
   public void deleteProductFromOrder(Order order) {
     int productIndex = selectProduct(order.getProducts());
-
     // remove the product from the order
     order.getProducts().remove(productIndex);
   }
@@ -132,6 +131,7 @@ public class Oms {
   private int selectProduct(List < Product > products) {
     int productIndex;
     boolean invalid;
+    // needs to check if the order has products
     do {
       System.out.println("Select the product:");
       for (int i = 0; i < products.size(); i++) {

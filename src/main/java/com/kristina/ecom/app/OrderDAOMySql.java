@@ -140,7 +140,8 @@ public class OrderDAOMySql implements DAO<String, Order> {
         return order;
     }
     
-    @Override public int delete(String id) throws SQLException{
+    @Override 
+    public int delete(String id) throws SQLException{
       int rows = 0;
       Connection conn = datasource.getConnection();
       conn.setAutoCommit(false);
