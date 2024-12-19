@@ -89,9 +89,9 @@ public class OrderService {
   //   } catch (SQLException ex) {
   //     ex.printStackTrace();
   //   }
-
   //   return rows;
   // }
+
   // handling the products in the order
   public boolean update(Order order) {
     try {
@@ -99,28 +99,29 @@ public class OrderService {
         dao.update(order);
 
         // Update stock
-        Order oldOrder = dao.read(order.getId()); // if used only once, don't declare it 
+        Order originalOrder = dao.read(order.getId());
         Product  productFromStock;
         int difference;
         
-      if (order.getProducts().size() == oldOrder.getProducts().size()) {
+      if (order.getProducts().size() == originalOrder.getProducts().size()) {
         for (Product product : order.getProducts()) {
-          difference = product.getQuantity() - getProductQuantityById(oldOrder.getProducts(), product.getId());
+          difference = product.getQuantity() - getProductQuantityById(originalOrder.getProducts(), product.getId());
           productFromStock = daoP.read(product.getId());
           productFromStock.setQuantity(productFromStock.getQuantity() - difference);
           daoP.update(productFromStock);
         }
       } else {
-        Order originalOrder = get(order.getId());
+        // Order originalOrder = get(order.getId());
+        // this would still work but better to use the dao, like above
         List<Product> originalProducts = originalOrder.getProducts();
-
         List<Product> newProducts = order.getProducts();
 
         for (Product product : originalProducts) {
           if (newProducts.indexOf(product) == -1) { // the product is not in there
             int oldQuantity = product.getQuantity();
-            // just return the quantity to stock from the original product
-            // ... need to finish
+            product.setQuantity(product.getQuantity() + oldQuantity);           
+          } else {
+            System.out.println("the product is in both lists");
           }
         }
       }
