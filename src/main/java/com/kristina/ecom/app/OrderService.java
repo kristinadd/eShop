@@ -81,19 +81,24 @@ public class OrderService {
     return rows;
   }
 
-  public int update (Order order) {
-    int rows = 0;
-    try {
-      rows = dao.update(order);
-    } catch (SQLException ex) {
-      ex.printStackTrace();
-    }
+  // // handilng order
+  // public int update (Order order) {
+  //   int rows = 0;
+  //   try {
+  //     rows = dao.update(order);
+  //   } catch (SQLException ex) {
+  //     ex.printStackTrace();
+  //   }
 
-    return rows;
-  }
-
-  public boolean updateProductInOrder(Order order) {
+  //   return rows;
+  // }
+  // handling the products in the order
+  public boolean update(Order order) {
     try {
+      // Update order
+        dao.update(order);
+
+        // Update stock
         Order oldOrder = dao.read(order.getId()); // if used only once, don't declare it 
         Product  productFromStock;
         int difference;
@@ -105,9 +110,20 @@ public class OrderService {
           productFromStock.setQuantity(productFromStock.getQuantity() - difference);
           daoP.update(productFromStock);
         }
+      } else {
+        Order originalOrder = get(order.getId());
+        List<Product> originalProducts = originalOrder.getProducts();
+
+        List<Product> newProducts = order.getProducts();
+
+        for (Product product : originalProducts) {
+          if (newProducts.indexOf(product) == -1) { // the product is not in there
+            int oldQuantity = product.getQuantity();
+            // just return the quantity to stock from the original product
+            // ... need to finish
+          }
+        }
       }
-      order.update();
-      dao.update(order);
       return true;
     } catch (SQLException ex) {
       ex.printStackTrace();
@@ -115,27 +131,27 @@ public class OrderService {
     }
   }
 
-  public int updateProductsInOrder(Order order, Product product) {
-    int rows = 0;
-    try {
-      rows = ((OrderDAOMySql)dao).updateProductsInOrder(order, product);
-    } catch (SQLException ex) {
-      ex.printStackTrace();
-    }
-    return rows;
-  }
+  // public int updateProductsInOrder(Order order, Product product) {
+  //   int rows = 0;
+  //   try {
+  //     rows = ((OrderDAOMySql)dao).updateProductsInOrder(order, product);
+  //   } catch (SQLException ex) {
+  //     ex.printStackTrace();
+  //   }
+  //   return rows;
+  // }
 
-  // my version 
-  public boolean addProductToOrder(Order order) {
-    try {
-        order.update();
-        dao.update(order);
-        return true;
-    } catch (SQLException e) {
-        e.printStackTrace();
-        return false; 
-    }
-  }
+  // // my version 
+  // public boolean addProductToOrder(Order order) {
+  //   try {
+  //       order.update();
+  //       dao.update(order);
+  //       return true;
+  //   } catch (SQLException e) {
+  //       e.printStackTrace();
+  //       return false; 
+  //   }
+  // }
 
   // get the product quantity by its id in the oder 
   private int getProductQuantityById(List<Product> products, int id){
