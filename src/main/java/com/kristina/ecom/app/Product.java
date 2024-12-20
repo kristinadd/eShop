@@ -94,11 +94,12 @@ public class Product implements Cloneable {
 
   @Override 
   public boolean equals(Object obj) {
-    // two products are  == if they have the same type
     if (!(obj instanceof Product))
       return false;
 
-      //  and the same product id
     return ((Product) obj).getId() ==  this.getId();
   };
 }
+// == compares if two objects have the same reference in memory
+
+// the deffault equals uses == if not iverriden
