@@ -98,7 +98,6 @@ public class OrderService {
       // Update order
         dao.update(order);
 
-        // Update stock
         Order originalOrder = dao.read(order.getId());
         Product  productFromStock;
         int difference;
@@ -111,17 +110,16 @@ public class OrderService {
           daoP.update(productFromStock);
         }
       } else {
-        // Order originalOrder = get(order.getId());
-        // this would still work but better to use the dao, like above
+        // Order originalOrder = get(order.getId()); // this would still work but better to use the dao, like above
         List<Product> originalProducts = originalOrder.getProducts();
         List<Product> newProducts = order.getProducts();
 
-        for (Product product : originalProducts) {
-          if (newProducts.indexOf(product) == -1) { // the product is not in there
-            int oldQuantity = product.getQuantity();
-            product.setQuantity(product.getQuantity() + oldQuantity);           
+        for (Product originalProduct : originalProducts) {
+          if (newProducts.contains(originalProduct)) { // Contains uses the equals method to compare objects, falling back to the default implementation if not overridden
+            System.out.println("the product is in both orders");
           } else {
-            System.out.println("the product is in both lists");
+            originalProduct.setQuantity(originalProduct.getQuantity() + 3);
+            daoP.update(originalProduct); 
           }
         }
       }
