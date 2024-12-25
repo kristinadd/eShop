@@ -1,11 +1,8 @@
 package com.kristina.ecom.res;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 import javax.sql.DataSource;
-
-import javax.xml.crypto.Data;
 import com.mysql.cj.jdbc.MysqlDataSource;
 
 public class DataSourceFactory {

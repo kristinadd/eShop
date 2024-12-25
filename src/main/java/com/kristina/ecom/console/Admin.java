@@ -1,8 +1,6 @@
 package com.kristina.ecom.console;
 
-import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Scanner;
 import com.kristina.ecom.app.Product;
 import com.kristina.ecom.app.ProductService;

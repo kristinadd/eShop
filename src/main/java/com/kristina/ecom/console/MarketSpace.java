@@ -1,9 +1,6 @@
 package com.kristina.ecom.console;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.Scanner;
-
 import com.kristina.ecom.app.Component;
 import com.kristina.ecom.app.Computer;
 import com.kristina.ecom.app.ComputerBase;
@@ -14,13 +11,11 @@ import com.kristina.ecom.app.ProductService;
 import com.kristina.ecom.app.SortByOrderID;
 import com.kristina.ecom.app.SortByPrice;
 import com.kristina.ecom.app.SortStrategy;
-
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.sql.SQLException;
 
 public class MarketSpace {
   private static  MarketSpace instance = new MarketSpace();

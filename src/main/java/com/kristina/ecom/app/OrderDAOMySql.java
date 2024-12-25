@@ -4,7 +4,6 @@ import javax.sql.DataSource;
 import com.kristina.ecom.res.DAO;
 import com.kristina.ecom.res.DataSourceFactory;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
