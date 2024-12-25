@@ -81,47 +81,30 @@ public class OrderService {
     return rows;
   }
 
-  // // handilng order
-  // public int update (Order order) {
-  //   int rows = 0;
-  //   try {
-  //     rows = dao.update(order);
-  //   } catch (SQLException ex) {
-  //     ex.printStackTrace();
-  //   }
-  //   return rows;
-  // }
-
-  // handling the products in the order
   public boolean update(Order order) {
     try {
-      // Update order
-        dao.update(order);
-
-        Order originalOrder = dao.read(order.getId());
+        Order oldOrder = dao.read(order.getId());
         Product  productFromStock;
         int difference;
         
-      if (order.getProducts().size() == originalOrder.getProducts().size()) {
+      if (order.getProducts().size() == oldOrder.getProducts().size()) {
         for (Product product : order.getProducts()) {
-          difference = product.getQuantity() - getProductQuantityById(originalOrder.getProducts(), product.getId());
+          difference = product.getQuantity() - getProductQuantityById(oldOrder.getProducts(), product.getId());
           productFromStock = daoP.read(product.getId());
           productFromStock.setQuantity(productFromStock.getQuantity() - difference);
           daoP.update(productFromStock);
         }
       } else {
-        // Order originalOrder = get(order.getId()); // this would still work but better to use the dao, like above
-        List<Product> originalProducts = originalOrder.getProducts();
-        List<Product> newProducts = order.getProducts();
-
-        for (Product originalProduct : originalProducts) {
-          if (newProducts.contains(originalProduct)) { // Contains uses the equals method to compare objects, falling back to the default implementation if not overridden
-            System.out.println("the product is in both orders");
-          } else {
-            originalProduct.setQuantity(originalProduct.getQuantity() + 3);
-            daoP.update(originalProduct); 
-          }
+        List<Product> oldProducts = oldOrder.getProducts();
+        List<Product> newOrderProducts = order.getProducts();
+        for (Product product : oldProducts) {
+         if (!newOrderProducts.contains(product)) {
+          productFromStock = daoP.read(product.getId());
+          productFromStock.setQuantity(productFromStock.getQuantity() + product.getQuantity());
+          daoP.update(productFromStock);
+         }
         }
+        dao.update(order);
       }
       return true;
     } catch (SQLException ex) {
@@ -129,28 +112,6 @@ public class OrderService {
       return false;
     }
   }
-
-  // public int updateProductsInOrder(Order order, Product product) {
-  //   int rows = 0;
-  //   try {
-  //     rows = ((OrderDAOMySql)dao).updateProductsInOrder(order, product);
-  //   } catch (SQLException ex) {
-  //     ex.printStackTrace();
-  //   }
-  //   return rows;
-  // }
-
-  // // my version 
-  // public boolean addProductToOrder(Order order) {
-  //   try {
-  //       order.update();
-  //       dao.update(order);
-  //       return true;
-  //   } catch (SQLException e) {
-  //       e.printStackTrace();
-  //       return false; 
-  //   }
-  // }
 
   // get the product quantity by its id in the oder 
   private int getProductQuantityById(List<Product> products, int id){
