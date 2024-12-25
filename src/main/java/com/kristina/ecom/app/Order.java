@@ -8,7 +8,7 @@ public class Order {
   private String description;
   private float total;
   private LocalDateTime date;
-  private List < Product > products;
+  private List<Product> products;
 
   public Order(Computer computer) {
       this(
