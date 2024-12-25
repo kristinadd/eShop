@@ -86,7 +86,10 @@ public class OrderService {
         Order oldOrder = dao.read(order.getId());
         Product  productFromStock;
         int difference;
-        
+        List<Product> oldProducts = oldOrder.getProducts();
+        List<Product> newOrderProducts = order.getProducts();
+
+        // update existing product
       if (order.getProducts().size() == oldOrder.getProducts().size()) {
         for (Product product : order.getProducts()) {
           difference = product.getQuantity() - getProductQuantityById(oldOrder.getProducts(), product.getId());
@@ -94,9 +97,9 @@ public class OrderService {
           productFromStock.setQuantity(productFromStock.getQuantity() - difference);
           daoP.update(productFromStock);
         }
-      } else {
-        List<Product> oldProducts = oldOrder.getProducts();
-        List<Product> newOrderProducts = order.getProducts();
+      } else if (order.getProducts().size() < oldOrder.getProducts().size()) {
+        // delete product from order
+        // increase the stock
         for (Product product : oldProducts) {
          if (!newOrderProducts.contains(product)) {
           productFromStock = daoP.read(product.getId());
@@ -104,8 +107,20 @@ public class OrderService {
           daoP.update(productFromStock);
          }
         }
-        dao.update(order);
+      } else  if (order.getProducts().size() > oldOrder.getProducts().size()){
+        // add new product to the order
+        // need to decrease the stock
+        for (Product product : newOrderProducts) {
+          if (!oldProducts.contains(product)) {
+           productFromStock = daoP.read(product.getId());
+           productFromStock.setQuantity(productFromStock.getQuantity() - product.getQuantity());
+           daoP.update(productFromStock);
+          }
+         }
+      } else {
+        System.out.println("Something went wrong and no condition matched");
       }
+      dao.update(order);
       return true;
     } catch (SQLException ex) {
       ex.printStackTrace();
