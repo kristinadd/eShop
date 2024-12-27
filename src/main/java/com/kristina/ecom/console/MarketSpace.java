@@ -38,7 +38,7 @@ public class MarketSpace {
     new ProductService().getAll().forEach((product) -> this.products.put(product.getId(), product)); // load products from db
     Computer computer = new ComputerBase();
     Boolean cancel = false;
-    Scanner sc = new Scanner(System.in);
+    Scanner sc = new Scanner(System.in); // ??? 
     int c = 0;
 
     while (true) {
