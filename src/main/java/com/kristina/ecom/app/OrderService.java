@@ -1,6 +1,7 @@
 package com.kristina.ecom.app;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 import java.util.List;
 import com.kristina.ecom.res.DAO;
 import java.sql.SQLException;
@@ -87,38 +88,24 @@ public class OrderService {
         int difference;
         List<Product> oldProducts = oldOrder.getProducts();
         List<Product> newOrderProducts = order.getProducts();
-
-        // update existing product
-      if (order.getProducts().size() == oldOrder.getProducts().size()) {
-        for (Product product : order.getProducts()) {
-          difference = product.getQuantity() - getProductQuantityById(oldOrder.getProducts(), product.getId());
+        List<Product> commonProducts = newOrderProducts.stream().filter(p -> oldProducts.contains(p)).collect(Collectors.toList());
+        List<Product> onlyOldOrder = oldProducts.stream().filter(p -> !newOrderProducts.contains(p)).collect(Collectors.toList());
+        List<Product> onlyNewOrder = newOrderProducts.stream().filter(p -> !oldProducts.contains(p)).collect(Collectors.toList());
+        // update existing product or add new product 
+        commonProducts.addAll(onlyNewOrder);
+        for (Product product : commonProducts) {
+          difference = product.getQuantity() - getProductQuantityById(oldProducts, product.getId());
           productFromStock = daoP.read(product.getId());
           productFromStock.setQuantity(productFromStock.getQuantity() - difference);
           daoP.update(productFromStock);
         }
-      } else if (order.getProducts().size() < oldOrder.getProducts().size()) {
-        // delete product from order
-        // increase the stock
-        for (Product product : oldProducts) {
-         if (!newOrderProducts.contains(product)) {
+        // delete product from order, increase the stock
+        for (Product product : onlyOldOrder) {
           productFromStock = daoP.read(product.getId());
           productFromStock.setQuantity(productFromStock.getQuantity() + product.getQuantity());
           daoP.update(productFromStock);
-         }
-        }
-      } else  if (order.getProducts().size() > oldOrder.getProducts().size()){
-        // add new product to the order
-        // need to decrease the stock
-        for (Product product : newOrderProducts) {
-          if (!oldProducts.contains(product)) {
-           productFromStock = daoP.read(product.getId());
-           productFromStock.setQuantity(productFromStock.getQuantity() - product.getQuantity());
-           daoP.update(productFromStock);
           }
-         }
-      } else {
-        System.out.println("Something went wrong and no condition matched");
-      }
+
       dao.update(order);
       return true;
     } catch (SQLException ex) {
