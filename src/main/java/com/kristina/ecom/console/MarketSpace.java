@@ -8,26 +8,20 @@ import com.kristina.ecom.app.Order;
 import com.kristina.ecom.app.OrderService;
 import com.kristina.ecom.app.Product;
 import com.kristina.ecom.app.ProductService;
-import com.kristina.ecom.app.SortByOrderID;
-import com.kristina.ecom.app.SortByPrice;
-import com.kristina.ecom.app.SortStrategy;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class MarketSpace {
   private static  MarketSpace instance = new MarketSpace();
   private Map<Integer, Product> products;
   private List<Computer> cart;
-  private SortStrategy strategy, sortByOrderIDStrategy, sortByPriceStrategy;
+
 
   private MarketSpace() {
     products = new HashMap<>();
     cart = new ArrayList<>();
-    sortByOrderIDStrategy = new SortByOrderID();
-    sortByPriceStrategy = new SortByPrice();
   }
 
   public static MarketSpace instance() {
@@ -38,7 +32,7 @@ public class MarketSpace {
     new ProductService().getAll().forEach((product) -> this.products.put(product.getId(), product)); // load products from db
     Computer computer = new ComputerBase();
     Boolean cancel = false;
-    Scanner sc = new Scanner(System.in); // ??? 
+    Scanner sc = new Scanner(System.in);
     int c = 0;
 
     while (true) {
@@ -77,23 +71,13 @@ public class MarketSpace {
         continue;
       }
     }
+    // sc.close();
 
     if (!cancel) {
       cart.add(computer);
-      Order order = new Order(computer);
-      OrderService service = new OrderService();
-      service.create(order);
-
       } else {
         System.out.println("Order is canceled!");
     }
-  }
-
-  public void getCart() {
-    if (cart.isEmpty())
-      System.out.println("No items");
-    else
-      System.out.print(Arrays.toString(cart.toArray()));
   }
 
   private void menu() {
@@ -109,20 +93,9 @@ public class MarketSpace {
         // ^ the same as the for loop above it but more concise
       System.out.println(-1 + ": " + "Cancel");
       System.out.println(0 + ": " + "Done");
-
-
   }
 
-  public void sort(String key) {
-    if (cart.isEmpty()) {
-      System.out.println("No items");
-      return;
-    }
-    if (key.equals("ID"))
-      this.strategy = this.sortByOrderIDStrategy;
-    else if (key.equals("PRICE"))
-      this.strategy = this.sortByPriceStrategy;
-
-    this.strategy.sort(cart);
+  public List<Computer> getCart() {
+    return cart;
   }
 }
