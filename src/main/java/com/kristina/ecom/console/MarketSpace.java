@@ -4,8 +4,6 @@ import java.util.Scanner;
 import com.kristina.ecom.app.Component;
 import com.kristina.ecom.app.Computer;
 import com.kristina.ecom.app.ComputerBase;
-import com.kristina.ecom.app.Order;
-import com.kristina.ecom.app.OrderService;
 import com.kristina.ecom.app.Product;
 import com.kristina.ecom.app.ProductService;
 import java.util.Map;
