@@ -1,6 +1,5 @@
 package com.kristina.ecom.console;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
@@ -14,14 +13,12 @@ import com.kristina.ecom.app.SortStrategy;
 
 public class ShoppingCart {
   private Scanner sc;
-  private OrderService service;
   private List<Computer> cart;
   private SortStrategy strategy, sortByOrderIDStrategy, sortByPriceStrategy;
 
 
   public ShoppingCart(List<Computer> cart) {
     sc = new Scanner(System.in);
-    service = new OrderService();
     this.cart = cart;
     sortByOrderIDStrategy = new SortByOrderID();
     sortByPriceStrategy = new SortByPrice();
@@ -100,5 +97,5 @@ public class ShoppingCart {
 }
 
 // change the db to noSQL
-// create a OrderaAPI ; first
+// create a OrderAPI ; first
 // start React 
