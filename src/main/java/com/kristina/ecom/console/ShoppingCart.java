@@ -97,5 +97,5 @@ public class ShoppingCart {
 }
 
 // change the db to noSQL
-// create a OrderaAPI ; first
+// create a OrderAPI ; first
 // start React 
