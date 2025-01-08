@@ -1,6 +1,7 @@
 package com.kristina.ecom.ui;
-import com.kristina.ecom.app.Product;
-import com.kristina.ecom.app.ProductService;
+import com.kristina.ecom.domain.Product;
+import com.kristina.ecom.service.ProductService;
+
 import java.util.List;
 
 import org.springframework.web.bind.annotation.RequestMapping;

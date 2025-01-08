@@ -4,12 +4,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
-import com.kristina.ecom.app.Computer;
-import com.kristina.ecom.app.Order;
-import com.kristina.ecom.app.OrderService;
-import com.kristina.ecom.app.SortByOrderID;
-import com.kristina.ecom.app.SortByPrice;
-import com.kristina.ecom.app.SortStrategy;
+import com.kristina.ecom.domain.Computer;
+import com.kristina.ecom.domain.Order;
+import com.kristina.ecom.domain.SortByOrderID;
+import com.kristina.ecom.domain.SortByPrice;
+import com.kristina.ecom.domain.SortStrategy;
+import com.kristina.ecom.service.OrderService;
 
 public class ShoppingCart {
   private Scanner sc;
@@ -96,6 +96,5 @@ public class ShoppingCart {
   }
 }
 
-// change the db to noSQL
-// create a OrderAPI ; first
+// change the db to noSQL / Casandra
 // start React 

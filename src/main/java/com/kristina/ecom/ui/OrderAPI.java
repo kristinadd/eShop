@@ -1,6 +1,7 @@
 package com.kristina.ecom.ui;
-import com.kristina.ecom.app.Order;
-import com.kristina.ecom.app.OrderService;
+import com.kristina.ecom.domain.Order;
+import com.kristina.ecom.service.OrderService;
+
 import java.util.List;
 
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,14 +18,18 @@ import org.springframework.web.bind.annotation.PutMapping;
 public class OrderAPI {
   private OrderService service;
 
-  // public OrderAPI() {
-  //   service = new OrderService();
-  // }
+  // run spring
+  // ./mvnw spring-boot:run
+
+  // Manual 
+  public OrderAPI() {
+    service = new OrderService();
+  }
 
   // Constructor-based Dependency Injection
-  public OrderAPI(OrderService service) {
-    this.service = service;
-  }
+  // public OrderAPI(OrderService service) {
+  //   this.service = service;
+  // }
 
   @GetMapping(value="/getall", produces="application/json") 
   public List<Order> getAll() {
@@ -42,7 +47,7 @@ public class OrderAPI {
   }
 
   @DeleteMapping(value="/delete/{id}")  // don't need to produce json at all
-  public int delete(@PathVariable String id) { // I expected that it will return String as the id is String
+  public int delete(@PathVariable String id) {
     return service.delete(id);
   }
 
@@ -51,7 +56,7 @@ public class OrderAPI {
     return service.update(order);
   }
 
-  @DeleteMapping(value="/delete/{id}")
+  @DeleteMapping(value="/cancel/{id}") // put / as it's not really a delete, it's updating the memory
   public int cancel(@PathVariable String id) {
     return service.cancel(id);
   }

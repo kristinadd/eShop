@@ -1,4 +1,4 @@
-package com.kristina.ecom.res;
+package com.kristina.ecom.dao;
 
 import java.sql.SQLException;
 import java.util.List;

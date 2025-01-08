@@ -3,7 +3,7 @@ package com.kristina.ecom.ui;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import com.kristina.ecom.app.Product;
+import com.kristina.ecom.domain.Product;
 
 import org.springframework.ui.Model;
 

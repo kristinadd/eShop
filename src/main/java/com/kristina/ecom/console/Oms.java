@@ -4,10 +4,11 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
-import com.kristina.ecom.app.Order;
-import com.kristina.ecom.app.OrderService;
-import com.kristina.ecom.app.ProductService;
-import com.kristina.ecom.app.Product;
+
+import com.kristina.ecom.domain.Order;
+import com.kristina.ecom.domain.Product;
+import com.kristina.ecom.service.OrderService;
+import com.kristina.ecom.service.ProductService;
 
 public class Oms {
   private static Oms instance = new Oms();

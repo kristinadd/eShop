@@ -2,8 +2,9 @@ package com.kristina.ecom.console;
 
 import java.util.Arrays;
 import java.util.Scanner;
-import com.kristina.ecom.app.Product;
-import com.kristina.ecom.app.ProductService;
+
+import com.kristina.ecom.domain.Product;
+import com.kristina.ecom.service.ProductService;
 
 public class Admin {
   private static Admin instance = new Admin();

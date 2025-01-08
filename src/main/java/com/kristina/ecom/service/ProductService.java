@@ -1,9 +1,13 @@
-package com.kristina.ecom.app;
+package com.kristina.ecom.service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import com.kristina.ecom.res.DAO;
+
+import com.kristina.ecom.dao.DAO;
+import com.kristina.ecom.dao.ProductDAOMySql;
+import com.kristina.ecom.domain.Product;
+
 import java.sql.SQLException;
 
 public class ProductService {

@@ -1,4 +1,4 @@
-package com.kristina.ecom.app;
+package com.kristina.ecom.domain;
 
 import java.time.LocalDateTime;
 import java.util.List;
