@@ -1,4 +1,4 @@
-package com.kristina.ecom.app;
+package com.kristina.ecom.domain;
 
 import java.util.List;
 public interface Computer {

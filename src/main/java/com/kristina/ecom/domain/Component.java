@@ -1,4 +1,4 @@
-package com.kristina.ecom.app;
+package com.kristina.ecom.domain;
 public class Component extends ComputerDecorator {
   private String description;
   private double price;

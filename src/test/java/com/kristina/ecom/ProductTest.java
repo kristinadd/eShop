@@ -1,7 +1,9 @@
 package com.kristina.ecom;
 
 import org.junit.jupiter.api.Test;
-import com.kristina.ecom.app.Product;
+
+import com.kristina.ecom.domain.Product;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ProductTest {

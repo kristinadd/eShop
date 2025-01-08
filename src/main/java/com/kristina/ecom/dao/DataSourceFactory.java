@@ -1,4 +1,4 @@
-package com.kristina.ecom.res;
+package com.kristina.ecom.dao;
 
 import java.io.IOException;
 import java.util.Properties;

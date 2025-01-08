@@ -1,8 +1,9 @@
-package com.kristina.ecom.app;
+package com.kristina.ecom.dao;
 
 import javax.sql.DataSource;
-import com.kristina.ecom.res.DAO;
-import com.kristina.ecom.res.DataSourceFactory;
+
+import com.kristina.ecom.domain.Product;
+
 import java.util.List;
 import java.sql.Connection;
 import java.sql.ResultSet;

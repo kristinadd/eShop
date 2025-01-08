@@ -1,11 +1,13 @@
 package com.kristina.ecom.console;
 
 import java.util.Scanner;
-import com.kristina.ecom.app.Component;
-import com.kristina.ecom.app.Computer;
-import com.kristina.ecom.app.ComputerBase;
-import com.kristina.ecom.app.Product;
-import com.kristina.ecom.app.ProductService;
+
+import com.kristina.ecom.domain.Component;
+import com.kristina.ecom.domain.Computer;
+import com.kristina.ecom.domain.ComputerBase;
+import com.kristina.ecom.domain.Product;
+import com.kristina.ecom.service.ProductService;
+
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;

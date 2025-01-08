@@ -1,4 +1,4 @@
-package com.kristina.ecom.app;
+package com.kristina.ecom.domain;
 
 public class Product implements Cloneable {
   private int id;
