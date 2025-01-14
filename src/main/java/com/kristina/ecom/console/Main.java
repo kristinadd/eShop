@@ -1,7 +1,6 @@
 package com.kristina.ecom.console;
 
 import java.util.Scanner;
-// for the user input ;; old projects student 
 public class Main {
 
   private static MarketSpace marketSpace = MarketSpace.instance();
