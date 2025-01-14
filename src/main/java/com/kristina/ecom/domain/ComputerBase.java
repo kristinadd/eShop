@@ -2,9 +2,7 @@ package com.kristina.ecom.domain;
 
 import java.util.Random;
 import java.util.stream.Collectors;
-
 import com.kristina.ecom.service.ProductService;
-
 import java.util.List;
 import java.util.ArrayList;
 

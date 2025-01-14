@@ -102,7 +102,6 @@ public class Oms {
 
   public void deleteProductFromOrder(Order order) {
     int productIndex = selectProduct(order.getProducts());
-    // remove the product from the order
     order.getProducts().remove(productIndex);
   }
 
@@ -142,7 +141,6 @@ public class Oms {
     if (invalid)
       System.out.println("Invalid product, please choose again");
     } while (invalid);
-
 
     return productIndex;
   }
@@ -188,7 +186,7 @@ public class Oms {
           System.out.println("Invalid choice. Please try again.");
       }
     }
-
+    
     if (isDirty) {
       order.update();
       if (service.update(order)) {
@@ -201,9 +199,7 @@ public class Oms {
     } 
   }
 
-
   private void updateProducts(Order order) {
-    // Get user input
     int productIndex = selectProduct(order.getProducts());
 
     System.out.println("Enter the new quantity ( 0 to remove ):");

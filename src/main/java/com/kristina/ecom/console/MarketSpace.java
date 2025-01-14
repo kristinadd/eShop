@@ -71,7 +71,6 @@ public class MarketSpace {
         continue;
       }
     }
-    // sc.close();
 
     if (!cancel) {
       cart.add(computer);
@@ -82,15 +81,7 @@ public class MarketSpace {
 
   private void menu() {
     System.out.println("I'm in the MarketSpace class!");
-
-    // for (int i=0; i<products.size(); i++)
-    //   System.out.println((i+1) + ": " + products.get(i));
-
-    // for (Map.Entry<Integer, Product> entry: products.entrySet())
-    //     System.out.println(entry.getKey() + ": " + entry.getValue());
-
         products.forEach((k,v) -> System.out.println(k + ":" + v ));
-        // ^ the same as the for loop above it but more concise
       System.out.println(-1 + ": " + "Cancel");
       System.out.println(0 + ": " + "Done");
   }
